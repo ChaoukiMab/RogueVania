@@ -1,0 +1,10 @@
+{
+	"SourceFiles": [
+		"C:\\Users\\pc info\\Documents\\Unreal Projects\\RogueVania\\Source\\RogueVania\\RogueVania.Build.cs",
+		"C:\\Users\\pc info\\Documents\\Unreal Projects\\RogueVania\\Plugins\\VisualStudioTools\\bin\\Source\\VisualStudioBlueprintDebuggerHelper\\VisualStudioBlueprintDebuggerHelper.Build.cs",
+		"C:\\Users\\pc info\\Documents\\Unreal Projects\\RogueVania\\Plugins\\VisualStudioTools\\bin\\Source\\VisualStudioTools\\VisualStudioTools.Build.cs",
+		"C:\\Users\\pc info\\Documents\\Unreal Projects\\RogueVania\\Source\\RogueVania.Target.cs",
+		"C:\\Users\\pc info\\Documents\\Unreal Projects\\RogueVania\\Source\\RogueVaniaEditor.Target.cs"
+	],
+	"EngineVersion": "5.6.1"
+}

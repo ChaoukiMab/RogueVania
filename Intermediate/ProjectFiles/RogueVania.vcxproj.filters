@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\RogueVania.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{F31BBDD1-B3E8-3BCC-9652-680E16935819}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\RogueVania.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\RogueVaniaEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\.vsconfig" />
+    <Filter Include="Config">
+      <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Plugins">
+      <UniqueIdentifier>{BB38096A-B391-30DC-A0D4-4F3EA6B44507}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\VisualStudioTools">
+      <UniqueIdentifier>{41769F9C-1A97-316F-BB54-C3A5E5B67BD9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\VisualStudioTools\bin">
+      <UniqueIdentifier>{4670F384-E75E-3BD2-84FF-F925AACB0FD2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\VisualStudioTools\bin\Source">
+      <UniqueIdentifier>{75424A40-7A8B-31ED-955F-DF8B0663390B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\VisualStudioTools\bin\Source\VisualStudioBlueprintDebuggerHelper">
+      <UniqueIdentifier>{5879DB80-6F6D-31DF-8BD5-3F4F50ACC4DC}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioBlueprintDebuggerHelper\VisualStudioBlueprintDebuggerHelper.Build.cs">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioBlueprintDebuggerHelper</Filter>
+    </None>
+    <Filter Include="Plugins\VisualStudioTools\bin\Source\VisualStudioBlueprintDebuggerHelper\Private">
+      <UniqueIdentifier>{3825A3BA-19E9-36C6-BD51-73638C43294B}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioBlueprintDebuggerHelper\Private\VisualStudioBlueprintDebuggerHelperModule.cpp">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioBlueprintDebuggerHelper\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioBlueprintDebuggerHelper\Private\VisualStudioBlueprintDebuggerHelperModule.h">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioBlueprintDebuggerHelper\Private</Filter>
+    </ClInclude>
+    <None Include="..\..\Plugins\VisualStudioTools\bin\VisualStudioTools.uplugin">
+      <Filter>Plugins\VisualStudioTools\bin</Filter>
+    </None>
+    <Filter Include="Plugins\VisualStudioTools\bin\Source\VisualStudioTools">
+      <UniqueIdentifier>{E141A73D-C43D-3D12-B934-13F4D461235B}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\VisualStudioTools.Build.cs">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools</Filter>
+    </None>
+    <Filter Include="Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private">
+      <UniqueIdentifier>{08AF0DE4-8737-3404-81F6-4510F5721887}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\BlueprintAssetHelper.cpp">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\BlueprintAssetHelpers.h">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\BlueprintReferencesCommandlet.cpp">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\BlueprintReferencesCommandlet.h">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\FSmartBSTR.h">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\VisualStudioTools.cpp">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\VisualStudioToolsBlueprintBreakpointExtension.cpp">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\VisualStudioToolsBlueprintBreakpointExtension.h">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\VisualStudioToolsCommandlet.cpp">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\VisualStudioToolsCommandlet.h">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\VisualStudioToolsCommandletBase.cpp">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\VisualStudioToolsCommandletBase.h">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\VSServerCommandlet.cpp">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\VSServerCommandlet.h">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\VSTestAdapterCommandlet.cpp">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private\VSTestAdapterCommandlet.h">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Private</Filter>
+    </ClInclude>
+    <Filter Include="Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Public">
+      <UniqueIdentifier>{EABE66E6-AFD5-3A46-8B84-EF3EABAEBFE0}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Public\VisualStudioTools.h">
+      <Filter>Plugins\VisualStudioTools\bin\Source\VisualStudioTools\Public</Filter>
+    </ClInclude>
+    <Filter Include="Source\RogueVania">
+      <UniqueIdentifier>{3DE0354E-59CE-389C-85BA-17446AD8648D}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\RogueVania\RogueVania.Build.cs">
+      <Filter>Source\RogueVania</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\RogueVania\RogueVania.cpp">
+      <Filter>Source\RogueVania</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\RogueVania\RogueVania.h">
+      <Filter>Source\RogueVania</Filter>
+    </ClInclude>
+    <Filter Include="Source\RogueVania\Private">
+      <UniqueIdentifier>{B9916C1C-555A-3169-982D-175EDAC59406}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\RogueVania\Private\PCG_RogueVaniaBiomGenerator.cpp">
+      <Filter>Source\RogueVania\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\RogueVania\Private\RogueVaniaPCGBiomGenerator.cpp">
+      <Filter>Source\RogueVania\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\RogueVania\Private\RogueVaniaPCGRoomGenerator.cpp">
+      <Filter>Source\RogueVania\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\RogueVania\Private\URogueVaniaPCGTunnelGenerator.cpp">
+      <Filter>Source\RogueVania\Private</Filter>
+    </ClCompile>
+    <Filter Include="Source\RogueVania\Public">
+      <UniqueIdentifier>{5731A59A-4B8D-3B42-B852-39C7A7AA0CEB}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Source\RogueVania\Public\PCG_RogueVaniaBiomGenerator.h">
+      <Filter>Source\RogueVania\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\RogueVania\Public\RogueVaniaPCGBiomGenerator.h">
+      <Filter>Source\RogueVania\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\RogueVania\Public\RogueVaniaPCGRoomGenerator.h">
+      <Filter>Source\RogueVania\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\RogueVania\Public\URogueVaniaPCGTunnelGenerator.h">
+      <Filter>Source\RogueVania\Public</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

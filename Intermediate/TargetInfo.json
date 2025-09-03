@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "RogueVania",
+			"Path": "..\\Source\\RogueVania.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "RogueVaniaEditor",
+			"Path": "..\\Source\\RogueVaniaEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}
