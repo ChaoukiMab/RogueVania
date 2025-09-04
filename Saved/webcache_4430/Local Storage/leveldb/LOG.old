@@ -1,3 +1,2 @@
-2025/08/30-23:12:13.734 1684 Reusing MANIFEST C:/Users/pc info/Documents/Unreal Projects/RogueVania/Saved/webcache_4430\Local Storage\leveldb/MANIFEST-000001
-2025/08/30-23:12:13.743 1684 Recovering log #3
-2025/08/30-23:12:13.744 1684 Reusing old log C:/Users/pc info/Documents/Unreal Projects/RogueVania/Saved/webcache_4430\Local Storage\leveldb/000003.log 
+2025/08/30-01:06:30.221 3354 Creating DB C:/Users/pc info/Documents/Unreal Projects/RogueVania/Saved/webcache_4430\Local Storage\leveldb since it was missing.
+2025/08/30-01:06:30.238 3354 Reusing MANIFEST C:/Users/pc info/Documents/Unreal Projects/RogueVania/Saved/webcache_4430\Local Storage\leveldb/MANIFEST-000001
