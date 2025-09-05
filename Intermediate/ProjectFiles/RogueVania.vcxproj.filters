@@ -11,7 +11,10 @@
     <None Include="..\..\Source\RogueVaniaEditor.Target.cs">
       <Filter>Source</Filter>
     </None>
+    <None Include="..\..\.gitattributes" />
+    <None Include="..\..\.gitignore" />
     <None Include="..\..\.vsconfig" />
+    <None Include="..\..\README.md" />
     <Filter Include="Config">
       <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
     </Filter>
@@ -138,6 +141,9 @@
     <ClCompile Include="..\..\Source\RogueVania\Private\PCG_RogueVaniaBiomGenerator.cpp">
       <Filter>Source\RogueVania\Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\RogueVania\Private\RogueVaniaCaveMeshGenerator.cpp">
+      <Filter>Source\RogueVania\Private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\RogueVania\Private\RogueVaniaPCGBiomGenerator.cpp">
       <Filter>Source\RogueVania\Private</Filter>
     </ClCompile>
@@ -151,6 +157,9 @@
       <UniqueIdentifier>{5731A59A-4B8D-3B42-B852-39C7A7AA0CEB}</UniqueIdentifier>
     </Filter>
     <ClInclude Include="..\..\Source\RogueVania\Public\PCG_RogueVaniaBiomGenerator.h">
+      <Filter>Source\RogueVania\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\RogueVania\Public\RogueVaniaCaveMeshGenerator.h">
       <Filter>Source\RogueVania\Public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\RogueVania\Public\RogueVaniaPCGBiomGenerator.h">

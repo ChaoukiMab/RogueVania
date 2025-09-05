@@ -16,16 +16,19 @@
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
+enum class ERogueVaniaTunnelType : uint8;
 struct FPCGPoint;
 
 // ********** Begin Class URogueVaniaPCGTunnelGenerator ********************************************
-#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_26_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_RPC_WRAPPERS_NO_PURE_DECLS \
+	DECLARE_FUNCTION(execGenerateMultiSegmentTunnel); \
+	DECLARE_FUNCTION(execGenerateAdvancedTunnelPoints); \
 	DECLARE_FUNCTION(execGenerateTunnelPoints);
 
 
 ROGUEVANIA_API UClass* Z_Construct_UClass_URogueVaniaPCGTunnelGenerator_NoRegister();
 
-#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_26_INCLASS_NO_PURE_DECLS \
+#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesURogueVaniaPCGTunnelGenerator(); \
 	friend struct Z_Construct_UClass_URogueVaniaPCGTunnelGenerator_Statics; \
@@ -36,25 +39,23 @@ public: \
 	DECLARE_SERIALIZER(URogueVaniaPCGTunnelGenerator)
 
 
-#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_26_ENHANCED_CONSTRUCTORS \
-	/** Standard constructor, called after all reflected properties have been initialized */ \
-	NO_API URogueVaniaPCGTunnelGenerator(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
+#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_ENHANCED_CONSTRUCTORS \
 	/** Deleted move- and copy-constructors, should never be used */ \
 	URogueVaniaPCGTunnelGenerator(URogueVaniaPCGTunnelGenerator&&) = delete; \
 	URogueVaniaPCGTunnelGenerator(const URogueVaniaPCGTunnelGenerator&) = delete; \
 	DECLARE_VTABLE_PTR_HELPER_CTOR(NO_API, URogueVaniaPCGTunnelGenerator); \
 	DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(URogueVaniaPCGTunnelGenerator); \
-	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(URogueVaniaPCGTunnelGenerator) \
+	DEFINE_DEFAULT_CONSTRUCTOR_CALL(URogueVaniaPCGTunnelGenerator) \
 	NO_API virtual ~URogueVaniaPCGTunnelGenerator();
 
 
-#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_23_PROLOG
-#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_26_GENERATED_BODY \
+#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_21_PROLOG
+#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_26_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_26_INCLASS_NO_PURE_DECLS \
-	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_26_ENHANCED_CONSTRUCTORS \
+	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_INCLASS_NO_PURE_DECLS \
+	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -68,7 +69,9 @@ class URogueVaniaPCGTunnelGenerator;
 
 // ********** Begin Enum ERogueVaniaTunnelType *****************************************************
 #define FOREACH_ENUM_EROGUEVANIATUNNELTYPE(op) \
-	op(ERogueVaniaTunnelType::RandomWalk) 
+	op(ERogueVaniaTunnelType::RandomWalk) \
+	op(ERogueVaniaTunnelType::StraightLine) \
+	op(ERogueVaniaTunnelType::LShape) 
 
 enum class ERogueVaniaTunnelType : uint8;
 template<> struct TIsUEnumClass<ERogueVaniaTunnelType> { enum { Value = true }; };

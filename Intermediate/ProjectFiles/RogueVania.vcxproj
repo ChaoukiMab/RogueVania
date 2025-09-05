@@ -458,7 +458,10 @@
     <None Include="..\..\RogueVania.uproject"/>
     <None Include="..\..\Source\RogueVania.Target.cs"/>
     <None Include="..\..\Source\RogueVaniaEditor.Target.cs"/>
+    <None Include="..\..\.gitattributes"/>
+    <None Include="..\..\.gitignore"/>
     <None Include="..\..\.vsconfig"/>
+    <None Include="..\..\README.md"/>
     <None Include="..\..\Config\DefaultEditor.ini"/>
     <None Include="..\..\Config\DefaultEngine.ini"/>
     <None Include="..\..\Config\DefaultGame.ini"/>
@@ -533,6 +536,11 @@
       <ForcedIncludeFiles>$(ClCompile_ForcedIncludeFiles_2)</ForcedIncludeFiles>
       <AdditionalOptions>$(ClCompile_AdditionalOptions_1)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\..\Source\RogueVania\Private\RogueVaniaCaveMeshGenerator.cpp">
+      <AdditionalIncludeDirectories>$(ClCompile_AdditionalIncludeDirectories_2)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ClCompile_ForcedIncludeFiles_2)</ForcedIncludeFiles>
+      <AdditionalOptions>$(ClCompile_AdditionalOptions_1)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\Source\RogueVania\Private\RogueVaniaPCGBiomGenerator.cpp">
       <AdditionalIncludeDirectories>$(ClCompile_AdditionalIncludeDirectories_2)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(ClCompile_ForcedIncludeFiles_2)</ForcedIncludeFiles>
@@ -549,6 +557,7 @@
       <AdditionalOptions>$(ClCompile_AdditionalOptions_1)</AdditionalOptions>
     </ClCompile>
     <ClInclude Include="..\..\Source\RogueVania\Public\PCG_RogueVaniaBiomGenerator.h"/>
+    <ClInclude Include="..\..\Source\RogueVania\Public\RogueVaniaCaveMeshGenerator.h"/>
     <ClInclude Include="..\..\Source\RogueVania\Public\RogueVaniaPCGBiomGenerator.h"/>
     <ClInclude Include="..\..\Source\RogueVania\Public\RogueVaniaPCGRoomGenerator.h"/>
     <ClInclude Include="..\..\Source\RogueVania\Public\URogueVaniaPCGTunnelGenerator.h"/>

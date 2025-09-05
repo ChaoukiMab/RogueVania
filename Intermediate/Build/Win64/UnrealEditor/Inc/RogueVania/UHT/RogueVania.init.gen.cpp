@@ -17,13 +17,13 @@ void EmptyLinkFunctionForGeneratedCodeRogueVania_init() {}
 				nullptr,
 				0,
 				PKG_CompiledIn | 0x00000000,
-				0x01F4BAF4,
-				0x1F32892B,
+				0x2FD43563,
+				0x02E3877A,
 				METADATA_PARAMS(0, nullptr)
 			};
 			UECodeGen_Private::ConstructUPackage(Z_Registration_Info_UPackage__Script_RogueVania.OuterSingleton, PackageParams);
 		}
 		return Z_Registration_Info_UPackage__Script_RogueVania.OuterSingleton;
 	}
-	static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_RogueVania(Z_Construct_UPackage__Script_RogueVania, TEXT("/Script/RogueVania"), Z_Registration_Info_UPackage__Script_RogueVania, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x01F4BAF4, 0x1F32892B));
+	static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_RogueVania(Z_Construct_UPackage__Script_RogueVania, TEXT("/Script/RogueVania"), Z_Registration_Info_UPackage__Script_RogueVania, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x2FD43563, 0x02E3877A));
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
