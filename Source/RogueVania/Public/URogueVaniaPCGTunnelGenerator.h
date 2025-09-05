@@ -14,8 +14,7 @@ enum class ERogueVaniaTunnelType : uint8
 {
 	RandomWalk UMETA(DisplayName = "Random Walk"),
 	StraightLine UMETA(DisplayName = "Straight Line"),
-	LShape UMETA(DisplayName = "L-Shape"),
-	// You can add more types like A* pathfinding later
+	LShape UMETA(DisplayName = "L-Shape")
 };
 
 UCLASS(BlueprintType, Blueprintable)
@@ -114,6 +113,17 @@ private:
 		float TunnelWidth = 200.0f,
 		float TunnelHeight = 200.0f,
 		float Density = 1.0f
+	);
+
+	// Generate random walk tunnel
+	TArray<FPCGPoint> GenerateRandomWalkTunnel(
+		const FVector& StartLocation,
+		const FVector& EndLocation,
+		float StepDistance,
+		float MaxDeviation,
+		float NoiseScale,
+		float TunnelWidth,
+		float TunnelHeight
 	);
 
 	// Random stream for consistent randomization

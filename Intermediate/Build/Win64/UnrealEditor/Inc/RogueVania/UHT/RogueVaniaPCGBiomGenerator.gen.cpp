@@ -74,7 +74,7 @@ struct Z_Construct_UScriptStruct_FRogueVaniaBiomNode_Statics
 	static const UECodeGen_Private::FStructParams StructParams;
 };
 const UECodeGen_Private::FBytePropertyParams Z_Construct_UScriptStruct_FRogueVaniaBiomNode_Statics::NewProp_RoomSize_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams Z_Construct_UScriptStruct_FRogueVaniaBiomNode_Statics::NewProp_RoomSize = { "RoomSize", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FRogueVaniaBiomNode, RoomSize), Z_Construct_UEnum_RogueVania_ERogueVaniaRoomSize, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RoomSize_MetaData), NewProp_RoomSize_MetaData) }; // 972020981
+const UECodeGen_Private::FEnumPropertyParams Z_Construct_UScriptStruct_FRogueVaniaBiomNode_Statics::NewProp_RoomSize = { "RoomSize", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FRogueVaniaBiomNode, RoomSize), Z_Construct_UEnum_RogueVania_ERogueVaniaRoomSize, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RoomSize_MetaData), NewProp_RoomSize_MetaData) }; // 2985177357
 const UECodeGen_Private::FStructPropertyParams Z_Construct_UScriptStruct_FRogueVaniaBiomNode_Statics::NewProp_RelativeLocation = { "RelativeLocation", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FRogueVaniaBiomNode, RelativeLocation), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RelativeLocation_MetaData), NewProp_RelativeLocation_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UScriptStruct_FRogueVaniaBiomNode_Statics::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FRogueVaniaBiomNode_Statics::NewProp_RoomSize_Underlying,
@@ -242,10 +242,10 @@ struct Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics
 	};
 	static const UECodeGen_Private::FClassParams ClassParams;
 };
-const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics::NewProp_BiomNodes_Inner = { "BiomNodes", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FRogueVaniaBiomNode, METADATA_PARAMS(0, nullptr) }; // 3284253894
-const UECodeGen_Private::FArrayPropertyParams Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics::NewProp_BiomNodes = { "BiomNodes", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(URogueVaniaPCGBiomGenerator, BiomNodes), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BiomNodes_MetaData), NewProp_BiomNodes_MetaData) }; // 3284253894
-const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics::NewProp_TunnelGenerator = { "TunnelGenerator", nullptr, (EPropertyFlags)0x0010000000020015, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(URogueVaniaPCGBiomGenerator, TunnelGenerator), Z_Construct_UClass_URogueVaniaPCGTunnelGenerator_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TunnelGenerator_MetaData), NewProp_TunnelGenerator_MetaData) };
-const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics::NewProp_RoomGenerator = { "RoomGenerator", nullptr, (EPropertyFlags)0x0010000000020015, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(URogueVaniaPCGBiomGenerator, RoomGenerator), Z_Construct_UClass_URogueVaniaPCGRoomGenerator_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RoomGenerator_MetaData), NewProp_RoomGenerator_MetaData) };
+const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics::NewProp_BiomNodes_Inner = { "BiomNodes", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FRogueVaniaBiomNode, METADATA_PARAMS(0, nullptr) }; // 1986872209
+const UECodeGen_Private::FArrayPropertyParams Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics::NewProp_BiomNodes = { "BiomNodes", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(URogueVaniaPCGBiomGenerator, BiomNodes), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BiomNodes_MetaData), NewProp_BiomNodes_MetaData) }; // 1986872209
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics::NewProp_TunnelGenerator = { "TunnelGenerator", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(URogueVaniaPCGBiomGenerator, TunnelGenerator), Z_Construct_UClass_URogueVaniaPCGTunnelGenerator_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_TunnelGenerator_MetaData), NewProp_TunnelGenerator_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics::NewProp_RoomGenerator = { "RoomGenerator", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(URogueVaniaPCGBiomGenerator, RoomGenerator), Z_Construct_UClass_URogueVaniaPCGRoomGenerator_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RoomGenerator_MetaData), NewProp_RoomGenerator_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics::NewProp_BiomNodes_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_URogueVaniaPCGBiomGenerator_Statics::NewProp_BiomNodes,
@@ -281,7 +281,6 @@ UClass* Z_Construct_UClass_URogueVaniaPCGBiomGenerator()
 	}
 	return Z_Registration_Info_UClass_URogueVaniaPCGBiomGenerator.OuterSingleton;
 }
-URogueVaniaPCGBiomGenerator::URogueVaniaPCGBiomGenerator(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
 DEFINE_VTABLE_PTR_HELPER_CTOR(URogueVaniaPCGBiomGenerator);
 URogueVaniaPCGBiomGenerator::~URogueVaniaPCGBiomGenerator() {}
 // ********** End Class URogueVaniaPCGBiomGenerator ************************************************
@@ -290,13 +289,13 @@ URogueVaniaPCGBiomGenerator::~URogueVaniaPCGBiomGenerator() {}
 struct Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGBiomGenerator_h__Script_RogueVania_Statics
 {
 	static constexpr FStructRegisterCompiledInInfo ScriptStructInfo[] = {
-		{ FRogueVaniaBiomNode::StaticStruct, Z_Construct_UScriptStruct_FRogueVaniaBiomNode_Statics::NewStructOps, TEXT("RogueVaniaBiomNode"), &Z_Registration_Info_UScriptStruct_FRogueVaniaBiomNode, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FRogueVaniaBiomNode), 3284253894U) },
+		{ FRogueVaniaBiomNode::StaticStruct, Z_Construct_UScriptStruct_FRogueVaniaBiomNode_Statics::NewStructOps, TEXT("RogueVaniaBiomNode"), &Z_Registration_Info_UScriptStruct_FRogueVaniaBiomNode, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FRogueVaniaBiomNode), 1986872209U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_URogueVaniaPCGBiomGenerator, URogueVaniaPCGBiomGenerator::StaticClass, TEXT("URogueVaniaPCGBiomGenerator"), &Z_Registration_Info_UClass_URogueVaniaPCGBiomGenerator, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(URogueVaniaPCGBiomGenerator), 2142762150U) },
+		{ Z_Construct_UClass_URogueVaniaPCGBiomGenerator, URogueVaniaPCGBiomGenerator::StaticClass, TEXT("URogueVaniaPCGBiomGenerator"), &Z_Registration_Info_UClass_URogueVaniaPCGBiomGenerator, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(URogueVaniaPCGBiomGenerator), 873965303U) },
 	};
 };
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGBiomGenerator_h__Script_RogueVania_4289799768(TEXT("/Script/RogueVania"),
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGBiomGenerator_h__Script_RogueVania_1493562937(TEXT("/Script/RogueVania"),
 	Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGBiomGenerator_h__Script_RogueVania_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGBiomGenerator_h__Script_RogueVania_Statics::ClassInfo),
 	Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGBiomGenerator_h__Script_RogueVania_Statics::ScriptStructInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGBiomGenerator_h__Script_RogueVania_Statics::ScriptStructInfo),
 	nullptr, 0);

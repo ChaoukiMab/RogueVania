@@ -8,13 +8,13 @@ public class RogueVania : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "PCG" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "PCG", "MeshDescription", "StaticMeshDescription", "MeshUtilities", "MeshBuilder" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "PCG" });
 
 		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-		
+		 PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "ToolMenus", "MeshConversion", "GeometryCore" });
+
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 

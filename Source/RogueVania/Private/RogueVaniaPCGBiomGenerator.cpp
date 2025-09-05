@@ -1,70 +1,72 @@
 ﻿
 #include "RogueVaniaPCGBiomGenerator.h"
+#include "URogueVaniaPCGTunnelGenerator.h"
+#include "RogueVaniaPCGRoomGenerator.h"
 #include "Engine/Engine.h"
-#include "Math/UnrealMathUtility.h"
+
+URogueVaniaPCGBiomGenerator::URogueVaniaPCGBiomGenerator()
+{
+	// Initialize generators
+	TunnelGenerator = CreateDefaultSubobject<URogueVaniaPCGTunnelGenerator>(TEXT("TunnelGenerator"));
+	RoomGenerator = CreateDefaultSubobject<URogueVaniaPCGRoomGenerator>(TEXT("RoomGenerator"));
+
+	// Initialize with default biom node if empty
+	if (BiomNodes.Num() == 0)
+	{
+		FRogueVaniaBiomNode DefaultNode;
+		DefaultNode.RoomSize = ERogueVaniaRoomSize::Medium;
+		DefaultNode.RelativeLocation = FVector::ZeroVector;
+		BiomNodes.Add(DefaultNode);
+	}
+}
 
 void URogueVaniaPCGBiomGenerator::GenerateBiom(const FVector& StartLocation, TArray<FPCGPoint>& OutRoomPoints, TArray<FPCGPoint>& OutTunnelPoints)
 {
-	UE_LOG(LogTemp, Warning, TEXT("GenerateBiom called! StartLocation: %s, BiomNodes count: %d"),
-		*StartLocation.ToString(), BiomNodes.Num());
+	// Ensure generators exist
+	EnsureGeneratorsExist();
 
 	// Clear output arrays
 	OutRoomPoints.Empty();
 	OutTunnelPoints.Empty();
 
-	// Generate random room positions
+	// null check
+		if (!RoomGenerator || !TunnelGenerator)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to create generators"));
+			return;
+		}
+
+	if (BiomNodes.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No biom nodes defined"));
+		return;
+	}
+
+	// Generate room points from biom nodes
 	TArray<FVector> RoomPositions;
-	GenerateRandomRoomPositions(StartLocation, RoomPositions);
 
-	// Create room points
-	for (int32 i = 0; i < RoomPositions.Num(); i++)
+	for (const FRogueVaniaBiomNode& Node : BiomNodes)
 	{
-		FPCGPoint RoomPoint;
-		RoomPoint.Transform.SetLocation(RoomPositions[i]);
-		RoomPoint.Transform.SetRotation(FQuat::Identity);
-		RoomPoint.Transform.SetScale3D(FVector(1.0f));
-		RoomPoint.Density = 1.0f;
+		FVector RoomWorldLocation = GetRoomWorldLocation(Node, StartLocation);
+		RoomPositions.Add(RoomWorldLocation);
 
-		if (BiomNodes.IsValidIndex(i))
-		{
-			RoomPoint.SetLocalBounds(GetBoundsForRoomSize(BiomNodes[i].RoomSize));
+		// Generate room points using the room generator
+		TArray<FPCGPoint> RoomPoints = RoomGenerator->GenerateRoomPoints(
+			Node.RoomSize,
+			RoomWorldLocation,
+			0.05f // Default noise scale
+		);
 
-			// 🔹 Add extents so PCG can voxelize
-			switch (BiomNodes[i].RoomSize)
-			{
-			case ERogueVaniaRoomSize::Small:
-				RoomPoint.SetExtents(FVector(500.0f, 500.0f, 250.0f));
-				break;
-			case ERogueVaniaRoomSize::Medium:
-				RoomPoint.SetExtents(FVector(1000.0f, 1000.0f, 500.0f));
-				break;
-			case ERogueVaniaRoomSize::Large:
-				RoomPoint.SetExtents(FVector(2000.0f, 2000.0f, 1000.0f));
-				break;
-			case ERogueVaniaRoomSize::Huge:
-				RoomPoint.SetExtents(FVector(4000.0f, 4000.0f, 2000.0f));
-				break;
-			}
-		}
-		else
-		{
-			RoomPoint.SetLocalBounds(GetBoundsForRoomSize(ERogueVaniaRoomSize::Small));
-			RoomPoint.SetExtents(FVector(500.0f, 500.0f, 250.0f));
-		}
+		OutRoomPoints.Append(RoomPoints);
 
-		OutRoomPoints.Add(RoomPoint);
+		UE_LOG(LogTemp, Log, TEXT("Generated room at %s with %d points"),
+			*RoomWorldLocation.ToString(), RoomPoints.Num());
 	}
 
-	// Generate tunnels connecting the rooms
-	GenerateTunnelsBetweenRooms(RoomPositions, OutTunnelPoints);
+	// Connect rooms with tunnels
+	ConnectRoomsWithTunnels(RoomPositions, OutTunnelPoints);
 
-	// 🔹 Ensure tunnel points also have extents
-	for (FPCGPoint& TunnelPoint : OutTunnelPoints)
-	{
-		TunnelPoint.SetExtents(FVector(200.0f, 200.0f, 200.0f)); // thin tunnels
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Generated %d room points and %d tunnel points"),
+	UE_LOG(LogTemp, Log, TEXT("Biom generation complete: %d room points, %d tunnel points"),
 		OutRoomPoints.Num(), OutTunnelPoints.Num());
 }
 
@@ -72,137 +74,71 @@ void URogueVaniaPCGBiomGenerator::GenerateRandomRoomPositions(const FVector& Sta
 {
 	OutPositions.Empty();
 
-	// Parameters for room generation
-	const int32 NumRooms = FMath::Max(1, BiomNodes.Num() > 0 ? BiomNodes.Num() : 5); // Default to 5 rooms
-	const float MinDistance = 300.0f; // Minimum distance between rooms
-	const float MaxDistance = 800.0f; // Maximum distance from start
-	const int32 MaxAttempts = 100; // Max attempts to place each room
-
-	// Always start with the starting location
-	OutPositions.Add(StartLocation);
-
-	// Generate additional rooms
-	for (int32 i = 1; i < NumRooms; i++)
+	// This could be expanded for procedural room placement
+	// For now, we use the predefined biom nodes
+	for (const FRogueVaniaBiomNode& Node : BiomNodes)
 	{
-		FVector NewPosition = StartLocation;
-		bool bValidPosition = false;
-
-		for (int32 Attempt = 0; Attempt < MaxAttempts; Attempt++)
-		{
-			// Generate random position around the start location
-			float Angle = FMath::RandRange(0.0f, 2.0f * PI);
-			float Distance = FMath::RandRange(MinDistance, MaxDistance);
-
-			NewPosition = StartLocation + FVector(
-				FMath::Cos(Angle) * Distance,
-				FMath::Sin(Angle) * Distance,
-				0.0f
-			);
-
-			// Check if this position is far enough from existing rooms
-			bValidPosition = true;
-			for (const FVector& ExistingPos : OutPositions)
-			{
-				if (FVector::Dist(NewPosition, ExistingPos) < MinDistance)
-				{
-					bValidPosition = false;
-					break;
-				}
-			}
-
-			if (bValidPosition)
-			{
-				break;
-			}
-		}
-
-		OutPositions.Add(NewPosition);
-		UE_LOG(LogTemp, Log, TEXT("Generated room %d at position: %s"), i, *NewPosition.ToString());
+		OutPositions.Add(GetRoomWorldLocation(Node, StartLocation));
 	}
 }
 
-void URogueVaniaPCGBiomGenerator::GenerateTunnelsBetweenRooms(const TArray<FVector>& RoomPositions, TArray<FPCGPoint>& OutTunnelPoints)
+void URogueVaniaPCGBiomGenerator::ConnectRoomsWithTunnels(const TArray<FVector>& RoomPositions, TArray<FPCGPoint>& OutTunnelPoints)
 {
-	if (RoomPositions.Num() < 2)
+	if (!TunnelGenerator || RoomPositions.Num() < 2)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Not enough rooms to create tunnels (need at least 2, have %d)"), RoomPositions.Num());
-		return; // Need at least 2 rooms to create tunnels
-	}
-
-	// Create tunnels connecting each room to the next one (simple chain)
-	for (int32 i = 0; i < RoomPositions.Num() - 1; i++)
-	{
-		const FVector& StartPos = RoomPositions[i];
-		const FVector& EndPos = RoomPositions[i + 1];
-
-		// Generate tunnel points along the path
-		GenerateTunnelPath(StartPos, EndPos, OutTunnelPoints);
-		UE_LOG(LogTemp, Log, TEXT("Created tunnel from room %d to room %d"), i, i + 1);
-	}
-
-	// Optionally, connect the last room back to the first (creating a loop)
-	if (RoomPositions.Num() > 2)
-	{
-		const FVector& LastPos = RoomPositions.Last();
-		const FVector& FirstPos = RoomPositions[0];
-		GenerateTunnelPath(LastPos, FirstPos, OutTunnelPoints);
-		UE_LOG(LogTemp, Log, TEXT("Created tunnel from last room back to first room (loop)"));
-	}
-}
-
-void URogueVaniaPCGBiomGenerator::GenerateTunnelPath(const FVector& StartPos, const FVector& EndPos, TArray<FPCGPoint>& OutTunnelPoints)
-{
-	const float TunnelSegmentLength = 100.0f; // Distance between tunnel points
-	const FVector Direction = (EndPos - StartPos).GetSafeNormal();
-	const float TotalDistance = FVector::Dist(StartPos, EndPos);
-	const int32 NumSegments = FMath::CeilToInt(TotalDistance / TunnelSegmentLength);
-
-	if (NumSegments <= 1)
-	{
-		// Rooms are too close, no tunnel needed
 		return;
 	}
 
-	for (int32 i = 1; i < NumSegments; i++) // Skip start and end (those are rooms)
+	// Connect each room to the next one in sequence
+	for (int32 i = 0; i < RoomPositions.Num() - 1; i++)
 	{
-		const float Alpha = static_cast<float>(i) / static_cast<float>(NumSegments);
-		FVector TunnelPos = FMath::Lerp(StartPos, EndPos, Alpha);
+		TArray<FPCGPoint> TunnelSegment = TunnelGenerator->GenerateAdvancedTunnelPoints(
+			RoomPositions[i],
+			RoomPositions[i + 1],
+			ERogueVaniaTunnelType::RandomWalk,
+			100.0f, // Step distance
+			50.0f,  // Max deviation
+			0.05f,  // Noise scale
+			200.0f, // Tunnel width
+			200.0f  // Tunnel height
+		);
 
-		// Add some random variation to make tunnels more interesting
-		const float NoiseAmount = 50.0f;
-		TunnelPos.X += FMath::RandRange(-NoiseAmount, NoiseAmount);
-		TunnelPos.Y += FMath::RandRange(-NoiseAmount, NoiseAmount);
+		OutTunnelPoints.Append(TunnelSegment);
 
-		FPCGPoint TunnelPoint;
-		TunnelPoint.Transform.SetLocation(TunnelPos);
-		TunnelPoint.Transform.SetRotation(FQuat::Identity);
-		TunnelPoint.Transform.SetScale3D(FVector(0.5f)); // Smaller scale for tunnels
-		TunnelPoint.Density = 0.8f;
-
-		// Set bounds for tunnels
-		TunnelPoint.BoundsMin = FVector(-25.0f); // Smaller bounds for tunnels
-		TunnelPoint.BoundsMax = FVector(25.0f);
-
-		// 🔹 Set extents for tunnels (will be overridden later, but good to have)
-		TunnelPoint.SetExtents(FVector(200.0f, 200.0f, 200.0f));
-
-		OutTunnelPoints.Add(TunnelPoint);
+		UE_LOG(LogTemp, Log, TEXT("Generated tunnel from %s to %s with %d points"),
+			*RoomPositions[i].ToString(), *RoomPositions[i + 1].ToString(), TunnelSegment.Num());
 	}
 }
 
-FBox URogueVaniaPCGBiomGenerator::GetBoundsForRoomSize(ERogueVaniaRoomSize RoomSize)
+FVector URogueVaniaPCGBiomGenerator::GetRoomWorldLocation(const FRogueVaniaBiomNode& Node, const FVector& StartLocation)
+{
+	return StartLocation + Node.RelativeLocation;
+}
+
+float URogueVaniaPCGBiomGenerator::CalculateRoomSpacing(ERogueVaniaRoomSize RoomSize)
 {
 	switch (RoomSize)
 	{
 	case ERogueVaniaRoomSize::Small:
-		return FBox(FVector(-50.0f), FVector(50.0f));
+		return 500.0f;
 	case ERogueVaniaRoomSize::Medium:
-		return FBox(FVector(-75.0f), FVector(75.0f));
+		return 800.0f;
 	case ERogueVaniaRoomSize::Large:
-		return FBox(FVector(-100.0f), FVector(100.0f));
-	case ERogueVaniaRoomSize::Huge:
-		return FBox(FVector(-150.0f), FVector(150.0f));
+		return 1200.0f;
 	default:
-		return FBox(FVector(-50.0f), FVector(50.0f));
+		return 800.0f;
+	}
+}
+
+void URogueVaniaPCGBiomGenerator::EnsureGeneratorsExist()
+{
+	if (!TunnelGenerator)
+	{
+		TunnelGenerator = NewObject<URogueVaniaPCGTunnelGenerator>(this);
+	}
+
+	if (!RoomGenerator)
+	{
+		RoomGenerator = NewObject<URogueVaniaPCGRoomGenerator>(this);
 	}
 }

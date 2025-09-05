@@ -20,7 +20,7 @@ enum class ERogueVaniaTunnelType : uint8;
 struct FPCGPoint;
 
 // ********** Begin Class URogueVaniaPCGTunnelGenerator ********************************************
-#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_23_RPC_WRAPPERS_NO_PURE_DECLS \
 	DECLARE_FUNCTION(execGenerateMultiSegmentTunnel); \
 	DECLARE_FUNCTION(execGenerateAdvancedTunnelPoints); \
 	DECLARE_FUNCTION(execGenerateTunnelPoints);
@@ -28,7 +28,7 @@ struct FPCGPoint;
 
 ROGUEVANIA_API UClass* Z_Construct_UClass_URogueVaniaPCGTunnelGenerator_NoRegister();
 
-#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_INCLASS_NO_PURE_DECLS \
+#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_23_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesURogueVaniaPCGTunnelGenerator(); \
 	friend struct Z_Construct_UClass_URogueVaniaPCGTunnelGenerator_Statics; \
@@ -39,7 +39,7 @@ public: \
 	DECLARE_SERIALIZER(URogueVaniaPCGTunnelGenerator)
 
 
-#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_ENHANCED_CONSTRUCTORS \
+#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_23_ENHANCED_CONSTRUCTORS \
 	/** Deleted move- and copy-constructors, should never be used */ \
 	URogueVaniaPCGTunnelGenerator(URogueVaniaPCGTunnelGenerator&&) = delete; \
 	URogueVaniaPCGTunnelGenerator(const URogueVaniaPCGTunnelGenerator&) = delete; \
@@ -49,13 +49,13 @@ public: \
 	NO_API virtual ~URogueVaniaPCGTunnelGenerator();
 
 
-#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_21_PROLOG
-#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_GENERATED_BODY \
+#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_20_PROLOG
+#define FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_23_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_INCLASS_NO_PURE_DECLS \
-	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_24_ENHANCED_CONSTRUCTORS \
+	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_23_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_23_INCLASS_NO_PURE_DECLS \
+	FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h_23_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

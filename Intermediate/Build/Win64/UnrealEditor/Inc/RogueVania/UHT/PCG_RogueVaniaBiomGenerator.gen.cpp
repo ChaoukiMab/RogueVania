@@ -94,8 +94,8 @@ struct Z_Construct_UClass_UPCG_RogueVaniaBiomGeneratorSettings_Statics
 	};
 	static const UECodeGen_Private::FClassParams ClassParams;
 };
-const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_UPCG_RogueVaniaBiomGeneratorSettings_Statics::NewProp_BiomNodes_Inner = { "BiomNodes", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FRogueVaniaBiomNode, METADATA_PARAMS(0, nullptr) }; // 3284253894
-const UECodeGen_Private::FArrayPropertyParams Z_Construct_UClass_UPCG_RogueVaniaBiomGeneratorSettings_Statics::NewProp_BiomNodes = { "BiomNodes", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(UPCG_RogueVaniaBiomGeneratorSettings, BiomNodes), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BiomNodes_MetaData), NewProp_BiomNodes_MetaData) }; // 3284253894
+const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_UPCG_RogueVaniaBiomGeneratorSettings_Statics::NewProp_BiomNodes_Inner = { "BiomNodes", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FRogueVaniaBiomNode, METADATA_PARAMS(0, nullptr) }; // 1986872209
+const UECodeGen_Private::FArrayPropertyParams Z_Construct_UClass_UPCG_RogueVaniaBiomGeneratorSettings_Statics::NewProp_BiomNodes = { "BiomNodes", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(UPCG_RogueVaniaBiomGeneratorSettings, BiomNodes), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BiomNodes_MetaData), NewProp_BiomNodes_MetaData) }; // 1986872209
 const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_UPCG_RogueVaniaBiomGeneratorSettings_Statics::NewProp_StartLocation = { "StartLocation", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(UPCG_RogueVaniaBiomGeneratorSettings, StartLocation), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StartLocation_MetaData), NewProp_StartLocation_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_UPCG_RogueVaniaBiomGeneratorSettings_Statics::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_UPCG_RogueVaniaBiomGeneratorSettings_Statics::NewProp_BiomNodes_Inner,
@@ -139,10 +139,10 @@ UPCG_RogueVaniaBiomGeneratorSettings::~UPCG_RogueVaniaBiomGeneratorSettings() {}
 struct Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_PCG_RogueVaniaBiomGenerator_h__Script_RogueVania_Statics
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_UPCG_RogueVaniaBiomGeneratorSettings, UPCG_RogueVaniaBiomGeneratorSettings::StaticClass, TEXT("UPCG_RogueVaniaBiomGeneratorSettings"), &Z_Registration_Info_UClass_UPCG_RogueVaniaBiomGeneratorSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UPCG_RogueVaniaBiomGeneratorSettings), 325969355U) },
+		{ Z_Construct_UClass_UPCG_RogueVaniaBiomGeneratorSettings, UPCG_RogueVaniaBiomGeneratorSettings::StaticClass, TEXT("UPCG_RogueVaniaBiomGeneratorSettings"), &Z_Registration_Info_UClass_UPCG_RogueVaniaBiomGeneratorSettings, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(UPCG_RogueVaniaBiomGeneratorSettings), 837065343U) },
 	};
 };
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_PCG_RogueVaniaBiomGenerator_h__Script_RogueVania_1709742201(TEXT("/Script/RogueVania"),
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_PCG_RogueVaniaBiomGenerator_h__Script_RogueVania_1355732167(TEXT("/Script/RogueVania"),
 	Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_PCG_RogueVaniaBiomGenerator_h__Script_RogueVania_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_PCG_RogueVaniaBiomGenerator_h__Script_RogueVania_Statics::ClassInfo),
 	nullptr, 0,
 	nullptr, 0);

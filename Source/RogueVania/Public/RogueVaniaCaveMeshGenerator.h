@@ -8,6 +8,7 @@
 #include "StaticMeshDescription.h"
 #include "MeshDescription.h"
 #include "StaticMeshAttributes.h"
+#include "StaticMeshOperations.h"
 #include "RogueVaniaCaveMeshGenerator.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
@@ -18,16 +19,16 @@ class ROGUEVANIA_API URogueVaniaCaveMeshGenerator : public UObject
 public:
     URogueVaniaCaveMeshGenerator();
 
-    // Generate cave mesh from points
+    // Main function to generate cave mesh from room and tunnel points
     UFUNCTION(BlueprintCallable, Category = "Cave Generation")
     UStaticMesh* GenerateCaveMeshFromPoints(
         const TArray<FPCGPoint>& RoomPoints,
         const TArray<FPCGPoint>& TunnelPoints,
-        float VoxelSize = 100.0f,
+        float VoxelSize = 50.0f,
         float SmoothingIterations = 3
     );
 
-    // Generate room cavity at specific point
+    // Generate room cavity in voxel grid
     UFUNCTION(BlueprintCallable, Category = "Cave Generation")
     void GenerateRoomCavity(
         TArray<float>& VoxelGrid,
@@ -37,7 +38,7 @@ public:
         const FVector& GridOrigin
     );
 
-    // Generate tunnel cavity between points
+    // Generate tunnel cavity in voxel grid
     UFUNCTION(BlueprintCallable, Category = "Cave Generation")
     void GenerateTunnelCavity(
         TArray<float>& VoxelGrid,
@@ -47,9 +48,13 @@ public:
         const FVector& GridOrigin
     );
 
-    // Smooth the cave mesh
+    // Smooth the cave mesh using cellular automata
     UFUNCTION(BlueprintCallable, Category = "Cave Generation")
-    void SmoothCaveMesh(TArray<float>& VoxelGrid, FIntVector GridDimensions, int32 Iterations);
+    void SmoothCaveMesh(
+        TArray<float>& VoxelGrid,
+        FIntVector GridDimensions,
+        int32 Iterations = 3
+    );
 
 private:
     // Helper functions
@@ -61,6 +66,7 @@ private:
     void GenerateMeshFromVoxels(const TArray<float>& VoxelGrid, FIntVector GridDimensions, UStaticMesh* OutMesh);
 
     // Generate quad face for mesh
+    // Mesh generation helper functions
     void GenerateQuadFace(
         const FVector& VoxelPos,
         const FIntVector& Direction,
@@ -71,7 +77,6 @@ private:
         TArray<FVector2D>& UVs
     );
 
-    // Populate mesh description
     void PopulateMeshDescription(
         FMeshDescription* MeshDescription,
         const TArray<FVector>& Vertices,

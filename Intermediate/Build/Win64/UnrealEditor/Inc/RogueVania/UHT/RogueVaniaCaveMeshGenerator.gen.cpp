@@ -38,13 +38,13 @@ struct Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_GenerateCaveMeshFromPo
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
 		{ "Category", "Cave Generation" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "// Generate cave mesh from points\n" },
+		{ "Comment", "// Main function to generate cave mesh from room and tunnel points\n" },
 #endif
 		{ "CPP_Default_SmoothingIterations", "3.000000" },
-		{ "CPP_Default_VoxelSize", "100.000000" },
+		{ "CPP_Default_VoxelSize", "50.000000" },
 		{ "ModuleRelativePath", "Public/RogueVaniaCaveMeshGenerator.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Generate cave mesh from points" },
+		{ "ToolTip", "Main function to generate cave mesh from room and tunnel points" },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_RoomPoints_MetaData[] = {
@@ -120,11 +120,11 @@ struct Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_GenerateRoomCavity_Sta
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
 		{ "Category", "Cave Generation" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "// Generate room cavity at specific point\n" },
+		{ "Comment", "// Generate room cavity in voxel grid\n" },
 #endif
 		{ "ModuleRelativePath", "Public/RogueVaniaCaveMeshGenerator.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Generate room cavity at specific point" },
+		{ "ToolTip", "Generate room cavity in voxel grid" },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_RoomPoint_MetaData[] = {
@@ -198,11 +198,11 @@ struct Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_GenerateTunnelCavity_S
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
 		{ "Category", "Cave Generation" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "// Generate tunnel cavity between points\n" },
+		{ "Comment", "// Generate tunnel cavity in voxel grid\n" },
 #endif
 		{ "ModuleRelativePath", "Public/RogueVaniaCaveMeshGenerator.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Generate tunnel cavity between points" },
+		{ "ToolTip", "Generate tunnel cavity in voxel grid" },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_TunnelPoints_MetaData[] = {
@@ -277,11 +277,12 @@ struct Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_SmoothCaveMesh_Statics
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
 		{ "Category", "Cave Generation" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "// Smooth the cave mesh\n" },
+		{ "Comment", "// Smooth the cave mesh using cellular automata\n" },
 #endif
+		{ "CPP_Default_Iterations", "3" },
 		{ "ModuleRelativePath", "Public/RogueVaniaCaveMeshGenerator.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Smooth the cave mesh" },
+		{ "ToolTip", "Smooth the cave mesh using cellular automata" },
 #endif
 	};
 #endif // WITH_METADATA
@@ -379,10 +380,10 @@ struct Z_Construct_UClass_URogueVaniaCaveMeshGenerator_Statics
 #endif // WITH_METADATA
 	static UObject* (*const DependentSingletons[])();
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
-		{ &Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_GenerateCaveMeshFromPoints, "GenerateCaveMeshFromPoints" }, // 2300628040
-		{ &Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_GenerateRoomCavity, "GenerateRoomCavity" }, // 2963491297
-		{ &Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_GenerateTunnelCavity, "GenerateTunnelCavity" }, // 3501777343
-		{ &Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_SmoothCaveMesh, "SmoothCaveMesh" }, // 668008694
+		{ &Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_GenerateCaveMeshFromPoints, "GenerateCaveMeshFromPoints" }, // 1941418401
+		{ &Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_GenerateRoomCavity, "GenerateRoomCavity" }, // 2462885115
+		{ &Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_GenerateTunnelCavity, "GenerateTunnelCavity" }, // 751645573
+		{ &Z_Construct_UFunction_URogueVaniaCaveMeshGenerator_SmoothCaveMesh, "SmoothCaveMesh" }, // 3649911036
 	};
 	static_assert(UE_ARRAY_COUNT(FuncInfo) < 2048);
 	static constexpr FCppClassTypeInfoStatic StaticCppClassTypeInfo = {
@@ -426,10 +427,10 @@ URogueVaniaCaveMeshGenerator::~URogueVaniaCaveMeshGenerator() {}
 struct Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaCaveMeshGenerator_h__Script_RogueVania_Statics
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_URogueVaniaCaveMeshGenerator, URogueVaniaCaveMeshGenerator::StaticClass, TEXT("URogueVaniaCaveMeshGenerator"), &Z_Registration_Info_UClass_URogueVaniaCaveMeshGenerator, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(URogueVaniaCaveMeshGenerator), 1306680298U) },
+		{ Z_Construct_UClass_URogueVaniaCaveMeshGenerator, URogueVaniaCaveMeshGenerator::StaticClass, TEXT("URogueVaniaCaveMeshGenerator"), &Z_Registration_Info_UClass_URogueVaniaCaveMeshGenerator, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(URogueVaniaCaveMeshGenerator), 59004539U) },
 	};
 };
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaCaveMeshGenerator_h__Script_RogueVania_2927678413(TEXT("/Script/RogueVania"),
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaCaveMeshGenerator_h__Script_RogueVania_3480626251(TEXT("/Script/RogueVania"),
 	Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaCaveMeshGenerator_h__Script_RogueVania_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaCaveMeshGenerator_h__Script_RogueVania_Statics::ClassInfo),
 	nullptr, 0,
 	nullptr, 0);

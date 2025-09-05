@@ -141,7 +141,13 @@
     <ClCompile Include="..\..\Source\RogueVania\Private\PCG_RogueVaniaBiomGenerator.cpp">
       <Filter>Source\RogueVania\Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\RogueVania\Private\PCG_RogueVaniaCaveGenerator.cpp">
+      <Filter>Source\RogueVania\Private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\RogueVania\Private\RogueVaniaCaveMeshGenerator.cpp">
+      <Filter>Source\RogueVania\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\RogueVania\Private\RogueVaniaCaveTestActor.cpp">
       <Filter>Source\RogueVania\Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\RogueVania\Private\RogueVaniaPCGBiomGenerator.cpp">
@@ -159,7 +165,13 @@
     <ClInclude Include="..\..\Source\RogueVania\Public\PCG_RogueVaniaBiomGenerator.h">
       <Filter>Source\RogueVania\Public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\RogueVania\Public\PCG_RogueVaniaCaveGenerator.h">
+      <Filter>Source\RogueVania\Public</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\RogueVania\Public\RogueVaniaCaveMeshGenerator.h">
+      <Filter>Source\RogueVania\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\RogueVania\Public\RogueVaniaCaveTestActor.h">
       <Filter>Source\RogueVania\Public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\RogueVania\Public\RogueVaniaPCGBiomGenerator.h">

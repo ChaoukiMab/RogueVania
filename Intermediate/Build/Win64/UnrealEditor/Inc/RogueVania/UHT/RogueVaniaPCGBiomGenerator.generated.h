@@ -46,14 +46,12 @@ public: \
 
 
 #define FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGBiomGenerator_h_28_ENHANCED_CONSTRUCTORS \
-	/** Standard constructor, called after all reflected properties have been initialized */ \
-	NO_API URogueVaniaPCGBiomGenerator(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
 	/** Deleted move- and copy-constructors, should never be used */ \
 	URogueVaniaPCGBiomGenerator(URogueVaniaPCGBiomGenerator&&) = delete; \
 	URogueVaniaPCGBiomGenerator(const URogueVaniaPCGBiomGenerator&) = delete; \
 	DECLARE_VTABLE_PTR_HELPER_CTOR(NO_API, URogueVaniaPCGBiomGenerator); \
 	DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(URogueVaniaPCGBiomGenerator); \
-	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(URogueVaniaPCGBiomGenerator) \
+	DEFINE_DEFAULT_CONSTRUCTOR_CALL(URogueVaniaPCGBiomGenerator) \
 	NO_API virtual ~URogueVaniaPCGBiomGenerator();
 
 
