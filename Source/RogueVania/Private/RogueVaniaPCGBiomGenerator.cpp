@@ -1,5 +1,4 @@
-﻿
-#include "RogueVaniaPCGBiomGenerator.h"
+﻿#include "RogueVaniaPCGBiomGenerator.h"
 #include "URogueVaniaPCGTunnelGenerator.h"
 #include "RogueVaniaPCGRoomGenerator.h"
 #include "Engine/Engine.h"
@@ -7,89 +6,109 @@
 URogueVaniaPCGBiomGenerator::URogueVaniaPCGBiomGenerator()
 {
 	// Initialize generators
-	TunnelGenerator = CreateDefaultSubobject<URogueVaniaPCGTunnelGenerator>(TEXT("TunnelGenerator"));
-	RoomGenerator = CreateDefaultSubobject<URogueVaniaPCGRoomGenerator>(TEXT("RoomGenerator"));
-
-	// Initialize with default biom node if empty
-	if (BiomNodes.Num() == 0)
-	{
-		FRogueVaniaBiomNode DefaultNode;
-		DefaultNode.RoomSize = ERogueVaniaRoomSize::Medium;
-		DefaultNode.RelativeLocation = FVector::ZeroVector;
-		BiomNodes.Add(DefaultNode);
-	}
+	TunnelGenerator = NewObject<URogueVaniaPCGTunnelGenerator>(this);
+	RoomGenerator = NewObject<URogueVaniaPCGRoomGenerator>(this);
 }
 
-void URogueVaniaPCGBiomGenerator::GenerateBiom(const FVector& StartLocation, TArray<FPCGPoint>& OutRoomPoints, TArray<FPCGPoint>& OutTunnelPoints)
+void URogueVaniaPCGBiomGenerator::GenerateBiom(
+	const FVector& StartLocation,
+	TArray<FPCGPoint>& OutRoomPoints,
+	TArray<FPCGPoint>& OutTunnelPoints)
 {
-	// Ensure generators exist
 	EnsureGeneratorsExist();
 
-	// Clear output arrays
 	OutRoomPoints.Empty();
 	OutTunnelPoints.Empty();
 
-	// null check
-		if (!RoomGenerator || !TunnelGenerator)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to create generators"));
-			return;
-		}
-
-	if (BiomNodes.Num() == 0)
+	if (!RoomGenerator || !TunnelGenerator)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No biom nodes defined"));
+		UE_LOG(LogTemp, Error, TEXT("Failed to create generators"));
 		return;
 	}
 
-	// Generate room points from biom nodes
 	TArray<FVector> RoomPositions;
+	TArray<ERogueVaniaRoomSize> RoomSizes;
 
-	for (const FRogueVaniaBiomNode& Node : BiomNodes)
+	// Fully procedural layout
+	GenerateProceduralRoomPositions(StartLocation, RoomPositions, RoomSizes);
+
+	// Generate all rooms
+	for (int32 i = 0; i < RoomPositions.Num(); i++)
 	{
-		FVector RoomWorldLocation = GetRoomWorldLocation(Node, StartLocation);
-		RoomPositions.Add(RoomWorldLocation);
+		const FVector& RoomLocation = RoomPositions[i];
+		ERogueVaniaRoomSize Size = RoomSizes[i];
 
-		// Generate room points using the room generator
 		TArray<FPCGPoint> RoomPoints = RoomGenerator->GenerateRoomPoints(
-			Node.RoomSize,
-			RoomWorldLocation,
-			0.05f // Default noise scale
+			Size,
+			RoomLocation,
+			RoomGenerator->DefaultNoiseScale
 		);
 
 		OutRoomPoints.Append(RoomPoints);
 
 		UE_LOG(LogTemp, Log, TEXT("Generated room at %s with %d points"),
-			*RoomWorldLocation.ToString(), RoomPoints.Num());
+			*RoomLocation.ToString(), RoomPoints.Num());
 	}
 
-	// Connect rooms with tunnels
+	// Connect with tunnels
 	ConnectRoomsWithTunnels(RoomPositions, OutTunnelPoints);
 
 	UE_LOG(LogTemp, Log, TEXT("Biom generation complete: %d room points, %d tunnel points"),
 		OutRoomPoints.Num(), OutTunnelPoints.Num());
 }
 
-void URogueVaniaPCGBiomGenerator::GenerateRandomRoomPositions(const FVector& StartLocation, TArray<FVector>& OutPositions)
+// --- Procedural room placement ---
+void URogueVaniaPCGBiomGenerator::GenerateProceduralRoomPositions(
+	const FVector& StartLocation,
+	TArray<FVector>& OutPositions,
+	TArray<ERogueVaniaRoomSize>& OutSizes)
 {
 	OutPositions.Empty();
+	OutSizes.Empty();
 
-	// This could be expanded for procedural room placement
-	// For now, we use the predefined biom nodes
-	for (const FRogueVaniaBiomNode& Node : BiomNodes)
+	FVector CurrentLocation = StartLocation;
+
+	// Start with an up or down bias
+	float VerticalBias = FMath::RandBool() ? 1.0f : -1.0f;
+	int32 StepsUntilSwitch = FMath::RandRange(2, 5);
+
+	for (int32 i = 0; i < NumRooms; i++)
 	{
-		OutPositions.Add(GetRoomWorldLocation(Node, StartLocation));
+		// Pick random room size
+		ERogueVaniaRoomSize RoomSize = static_cast<ERogueVaniaRoomSize>(FMath::RandRange(0, 2));
+		float Spacing = CalculateRoomSpacing(RoomSize);
+
+		OutPositions.Add(CurrentLocation);
+		OutSizes.Add(RoomSize);
+
+		// Random offset with vertical bias
+		FVector RandomOffset = FVector(
+			Spacing,
+			FMath::RandRange(-Spacing * 0.5f, Spacing * 0.5f),
+			VerticalBias * FMath::RandRange(Spacing * 0.3f, Spacing * 0.8f)
+		);
+
+		CurrentLocation += RandomOffset;
+
+		StepsUntilSwitch--;
+		if (StepsUntilSwitch <= 0)
+		{
+			VerticalBias *= -1.0f; // flip up/down
+			StepsUntilSwitch = FMath::RandRange(2, 5);
+		}
 	}
 }
 
-void URogueVaniaPCGBiomGenerator::ConnectRoomsWithTunnels(const TArray<FVector>& RoomPositions, TArray<FPCGPoint>& OutTunnelPoints)
+// --- Tunnels ---
+void URogueVaniaPCGBiomGenerator::ConnectRoomsWithTunnels(
+	const TArray<FVector>& RoomPositions,
+	TArray<FPCGPoint>& OutTunnelPoints)
 {
 	if (!TunnelGenerator || RoomPositions.Num() < 2)
 	{
 		return;
 	}
 
-	// Connect each room to the next one in sequence
 	for (int32 i = 0; i < RoomPositions.Num() - 1; i++)
 	{
 		TArray<FPCGPoint> TunnelSegment = TunnelGenerator->GenerateAdvancedTunnelPoints(
@@ -98,9 +117,7 @@ void URogueVaniaPCGBiomGenerator::ConnectRoomsWithTunnels(const TArray<FVector>&
 			ERogueVaniaTunnelType::RandomWalk,
 			100.0f, // Step distance
 			50.0f,  // Max deviation
-			0.05f,  // Noise scale
-			200.0f, // Tunnel width
-			200.0f  // Tunnel height
+			0.05f   // Noise scale
 		);
 
 		OutTunnelPoints.Append(TunnelSegment);
@@ -110,23 +127,15 @@ void URogueVaniaPCGBiomGenerator::ConnectRoomsWithTunnels(const TArray<FVector>&
 	}
 }
 
-FVector URogueVaniaPCGBiomGenerator::GetRoomWorldLocation(const FRogueVaniaBiomNode& Node, const FVector& StartLocation)
-{
-	return StartLocation + Node.RelativeLocation;
-}
-
+// --- Utilities ---
 float URogueVaniaPCGBiomGenerator::CalculateRoomSpacing(ERogueVaniaRoomSize RoomSize)
 {
 	switch (RoomSize)
 	{
-	case ERogueVaniaRoomSize::Small:
-		return 500.0f;
-	case ERogueVaniaRoomSize::Medium:
-		return 800.0f;
-	case ERogueVaniaRoomSize::Large:
-		return 1200.0f;
-	default:
-		return 800.0f;
+	case ERogueVaniaRoomSize::Small:  return 500.0f;
+	case ERogueVaniaRoomSize::Medium: return 800.0f;
+	case ERogueVaniaRoomSize::Large:  return 1200.0f;
+	default:                          return 800.0f;
 	}
 }
 

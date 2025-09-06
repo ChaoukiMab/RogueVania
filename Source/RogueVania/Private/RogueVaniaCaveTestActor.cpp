@@ -13,11 +13,6 @@ ARogueVaniaCaveTestActor::ARogueVaniaCaveTestActor()
 	// Create generators
 	BiomGenerator = CreateDefaultSubobject<URogueVaniaPCGBiomGenerator>(TEXT("BiomGenerator"));
 	MeshGenerator = CreateDefaultSubobject<URogueVaniaCaveMeshGenerator>(TEXT("MeshGenerator"));
-
-	// Set default biome configuration
-	BiomNodes.Add(FRogueVaniaBiomNode());
-	BiomNodes[0].RoomSize = ERogueVaniaRoomSize::Medium;
-	BiomNodes[0].RelativeLocation = FVector::ZeroVector;
 }
 
 void ARogueVaniaCaveTestActor::BeginPlay()
@@ -38,19 +33,11 @@ void ARogueVaniaCaveTestActor::GenerateCave()
 		return;
 	}
 
-	// Validate biome nodes
-	if (BiomNodes.Num() == 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No biome nodes configured, using default"));
-		BiomNodes.Add(FRogueVaniaBiomNode());
-		BiomNodes[0].RoomSize = ERogueVaniaRoomSize::Medium;
-		BiomNodes[0].RelativeLocation = FVector::ZeroVector;
-	}
+	// Pass NumRooms to biom generator
+	BiomGenerator->NumRooms = NumRooms;
 
-	UE_LOG(LogTemp, Warning, TEXT("Generating cave at location: %s"), *GetActorLocation().ToString());
-
-	// Set biome configuration
-	BiomGenerator->BiomNodes = BiomNodes;
+	UE_LOG(LogTemp, Warning, TEXT("Generating cave at location: %s with %d rooms"),
+		*GetActorLocation().ToString(), NumRooms);
 
 	// Generate biome data
 	TArray<FPCGPoint> RoomPoints;
@@ -61,11 +48,15 @@ void ARogueVaniaCaveTestActor::GenerateCave()
 
 	if (bShowDebugInfo)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Generated %d rooms and %d tunnel points"),
+		UE_LOG(LogTemp, Warning, TEXT("Generated %d room points and %d tunnel points"),
 			RoomPoints.Num(), TunnelPoints.Num());
 
 		DrawDebugPoints(RoomPoints, TunnelPoints);
 	}
+
+	// Cache points for regeneration
+	CachedRoomPoints = RoomPoints;
+	CachedTunnelPoints = TunnelPoints;
 
 	// Generate cave mesh
 	UStaticMesh* CaveMesh = MeshGenerator->GenerateCaveMeshFromPoints(
@@ -101,8 +92,8 @@ void ARogueVaniaCaveTestActor::UpdateCaveMesh()
 		{
 			CaveMeshComponent->SetStaticMesh(GeneratedMesh);
 
-			// Add default material
-			UMaterial* DefaultMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Engine/BasicShapes/BasicShapeMaterial"));
+			// Apply material
+			UMaterial* DefaultMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Game/World/Biom_One/CaveMaterials/CaveRooms/Materials/RoomsMaterialProto"));
 			if (DefaultMaterial)
 			{
 				CaveMeshComponent->SetMaterial(0, DefaultMaterial);
@@ -120,7 +111,6 @@ void ARogueVaniaCaveTestActor::ClearCave()
 		CaveMeshComponent->SetStaticMesh(nullptr);
 	}
 
-	// Clear debug drawings
 	if (GetWorld())
 	{
 		FlushDebugStrings(GetWorld());
@@ -143,18 +133,16 @@ void ARogueVaniaCaveTestActor::DrawDebugPoints(const TArray<FPCGPoint>& RoomPoin
 		return;
 	}
 
-	// Draw room points in blue
+	// Rooms in blue
 	for (const FPCGPoint& Point : RoomPoints)
 	{
 		FVector Location = Point.Transform.GetLocation();
 		FVector Extents = Point.GetExtents();
 
 		DrawDebugBox(GetWorld(), Location, Extents, FColor::Blue, true, 30.0f, 0, 5.0f);
-		DrawDebugString(GetWorld(), Location + FVector(0, 0, Extents.Z + 50),
-			TEXT("ROOM"), nullptr, FColor::Blue, 30.0f);
 	}
 
-	// Draw tunnel points in green
+	// Tunnels in green
 	for (int32 i = 0; i < TunnelPoints.Num(); i++)
 	{
 		FVector Location = TunnelPoints[i].Transform.GetLocation();
@@ -162,7 +150,6 @@ void ARogueVaniaCaveTestActor::DrawDebugPoints(const TArray<FPCGPoint>& RoomPoin
 
 		DrawDebugSphere(GetWorld(), Location, Extents.X, 12, FColor::Green, true, 30.0f, 0, 3.0f);
 
-		// Draw connections between tunnel points
 		if (i > 0)
 		{
 			FVector PrevLocation = TunnelPoints[i - 1].Transform.GetLocation();
@@ -170,5 +157,3 @@ void ARogueVaniaCaveTestActor::DrawDebugPoints(const TArray<FPCGPoint>& RoomPoin
 		}
 	}
 }
-
-

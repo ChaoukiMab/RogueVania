@@ -97,15 +97,9 @@ struct Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateCircularRoom_St
 	};
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "Category", "PCG|Generation" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "// Generate circular room\n" },
-#endif
+		{ "Category", "PCG|Generation|Legacy" },
 		{ "CPP_Default_PointSpacing", "50.000000" },
 		{ "ModuleRelativePath", "Public/RogueVaniaPCGRoomGenerator.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Generate circular room" },
-#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CenterLocation_MetaData[] = {
 		{ "NativeConst", "" },
@@ -170,12 +164,13 @@ struct Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateOrganicRoom_Sta
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
 		{ "Category", "PCG|Generation" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "// Generate organic shaped room with noise\n" },
+		{ "Comment", "// --- Core Organic Room Generation ---\n// -1 means \"use default\"\n" },
 #endif
+		{ "CPP_Default_NoiseScale", "-1.000000" },
 		{ "CPP_Default_PointSpacing", "50.000000" },
 		{ "ModuleRelativePath", "Public/RogueVaniaPCGRoomGenerator.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Generate organic shaped room with noise" },
+		{ "ToolTip", "--- Core Organic Room Generation ---\n-1 means \"use default\"" },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CenterLocation_MetaData[] = {
@@ -244,14 +239,14 @@ struct Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateRectangularRoom
 	};
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "Category", "PCG|Generation" },
+		{ "Category", "PCG|Generation|Legacy" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "// Generate rectangular room\n" },
+		{ "Comment", "// --- Additional Room Types (kept for future use) ---\n" },
 #endif
 		{ "CPP_Default_PointSpacing", "50.000000" },
 		{ "ModuleRelativePath", "Public/RogueVaniaPCGRoomGenerator.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Generate rectangular room" },
+		{ "ToolTip", "--- Additional Room Types (kept for future use) ---" },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CenterLocation_MetaData[] = {
@@ -324,12 +319,12 @@ struct Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateRoomPoints_Stat
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
 		{ "Category", "PCG|Generation" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "// Main room generation function\n" },
+		{ "Comment", "// Main room generation function (currently always organic)\n// -1 means \"use default\"\n" },
 #endif
-		{ "CPP_Default_NoiseScale", "0.050000" },
+		{ "CPP_Default_NoiseScale", "-1.000000" },
 		{ "ModuleRelativePath", "Public/RogueVaniaPCGRoomGenerator.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Main room generation function" },
+		{ "ToolTip", "Main room generation function (currently always organic)\n-1 means \"use default\"" },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CenterLocation_MetaData[] = {
@@ -433,13 +428,19 @@ struct Z_Construct_UClass_URogueVaniaPCGRoomGenerator_Statics
 		{ "IsBlueprintBase", "true" },
 		{ "ModuleRelativePath", "Public/RogueVaniaPCGRoomGenerator.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DefaultNoiseScale_MetaData[] = {
+		{ "Category", "Room Settings" },
+		{ "ModuleRelativePath", "Public/RogueVaniaPCGRoomGenerator.h" },
+	};
 #endif // WITH_METADATA
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_DefaultNoiseScale;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 	static UObject* (*const DependentSingletons[])();
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
-		{ &Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateCircularRoom, "GenerateCircularRoom" }, // 1439495058
-		{ &Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateOrganicRoom, "GenerateOrganicRoom" }, // 1821453310
-		{ &Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateRectangularRoom, "GenerateRectangularRoom" }, // 3383632439
-		{ &Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateRoomPoints, "GenerateRoomPoints" }, // 1957446569
+		{ &Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateCircularRoom, "GenerateCircularRoom" }, // 1484045685
+		{ &Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateOrganicRoom, "GenerateOrganicRoom" }, // 182936166
+		{ &Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateRectangularRoom, "GenerateRectangularRoom" }, // 1977556392
+		{ &Z_Construct_UFunction_URogueVaniaPCGRoomGenerator_GenerateRoomPoints, "GenerateRoomPoints" }, // 1389188921
 	};
 	static_assert(UE_ARRAY_COUNT(FuncInfo) < 2048);
 	static constexpr FCppClassTypeInfoStatic StaticCppClassTypeInfo = {
@@ -447,6 +448,11 @@ struct Z_Construct_UClass_URogueVaniaPCGRoomGenerator_Statics
 	};
 	static const UECodeGen_Private::FClassParams ClassParams;
 };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_URogueVaniaPCGRoomGenerator_Statics::NewProp_DefaultNoiseScale = { "DefaultNoiseScale", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(URogueVaniaPCGRoomGenerator, DefaultNoiseScale), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DefaultNoiseScale_MetaData), NewProp_DefaultNoiseScale_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_URogueVaniaPCGRoomGenerator_Statics::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_URogueVaniaPCGRoomGenerator_Statics::NewProp_DefaultNoiseScale,
+};
+static_assert(UE_ARRAY_COUNT(Z_Construct_UClass_URogueVaniaPCGRoomGenerator_Statics::PropPointers) < 2048);
 UObject* (*const Z_Construct_UClass_URogueVaniaPCGRoomGenerator_Statics::DependentSingletons[])() = {
 	(UObject* (*)())Z_Construct_UClass_UObject,
 	(UObject* (*)())Z_Construct_UPackage__Script_RogueVania,
@@ -458,11 +464,11 @@ const UECodeGen_Private::FClassParams Z_Construct_UClass_URogueVaniaPCGRoomGener
 	&StaticCppClassTypeInfo,
 	DependentSingletons,
 	FuncInfo,
-	nullptr,
+	Z_Construct_UClass_URogueVaniaPCGRoomGenerator_Statics::PropPointers,
 	nullptr,
 	UE_ARRAY_COUNT(DependentSingletons),
 	UE_ARRAY_COUNT(FuncInfo),
-	0,
+	UE_ARRAY_COUNT(Z_Construct_UClass_URogueVaniaPCGRoomGenerator_Statics::PropPointers),
 	0,
 	0x001000A0u,
 	METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UClass_URogueVaniaPCGRoomGenerator_Statics::Class_MetaDataParams), Z_Construct_UClass_URogueVaniaPCGRoomGenerator_Statics::Class_MetaDataParams)
@@ -486,10 +492,10 @@ struct Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaP
 		{ ERogueVaniaRoomSize_StaticEnum, TEXT("ERogueVaniaRoomSize"), &Z_Registration_Info_UEnum_ERogueVaniaRoomSize, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2985177357U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_URogueVaniaPCGRoomGenerator, URogueVaniaPCGRoomGenerator::StaticClass, TEXT("URogueVaniaPCGRoomGenerator"), &Z_Registration_Info_UClass_URogueVaniaPCGRoomGenerator, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(URogueVaniaPCGRoomGenerator), 2519485174U) },
+		{ Z_Construct_UClass_URogueVaniaPCGRoomGenerator, URogueVaniaPCGRoomGenerator::StaticClass, TEXT("URogueVaniaPCGRoomGenerator"), &Z_Registration_Info_UClass_URogueVaniaPCGRoomGenerator, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(URogueVaniaPCGRoomGenerator), 1124687814U) },
 	};
 };
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGRoomGenerator_h__Script_RogueVania_1674719972(TEXT("/Script/RogueVania"),
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGRoomGenerator_h__Script_RogueVania_4253402062(TEXT("/Script/RogueVania"),
 	Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGRoomGenerator_h__Script_RogueVania_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGRoomGenerator_h__Script_RogueVania_Statics::ClassInfo),
 	nullptr, 0,
 	Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGRoomGenerator_h__Script_RogueVania_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_RogueVaniaPCGRoomGenerator_h__Script_RogueVania_Statics::EnumInfo));

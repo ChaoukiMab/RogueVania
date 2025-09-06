@@ -24,16 +24,16 @@ class ROGUEVANIA_API URogueVaniaPCGRoomGenerator : public UObject
 public:
 	URogueVaniaPCGRoomGenerator();
 
-	// Main room generation function
+	// Main room generation function (currently always organic)
 	UFUNCTION(BlueprintCallable, Category = "PCG|Generation")
 	TArray<FPCGPoint> GenerateRoomPoints(
 		ERogueVaniaRoomSize RoomSize,
 		const FVector& CenterLocation,
-		float NoiseScale = 0.05f
+		float NoiseScale = -1.0f // -1 means "use default"
 	);
 
-	// Generate rectangular room
-	UFUNCTION(BlueprintCallable, Category = "PCG|Generation")
+	// --- Additional Room Types (kept for future use) ---
+	UFUNCTION(BlueprintCallable, Category = "PCG|Generation|Legacy")
 	TArray<FPCGPoint> GenerateRectangularRoom(
 		const FVector& CenterLocation,
 		float Width,
@@ -42,28 +42,35 @@ public:
 		float PointSpacing = 50.0f
 	);
 
-	// Generate circular room
-	UFUNCTION(BlueprintCallable, Category = "PCG|Generation")
+	UFUNCTION(BlueprintCallable, Category = "PCG|Generation|Legacy")
 	TArray<FPCGPoint> GenerateCircularRoom(
 		const FVector& CenterLocation,
 		float Radius,
 		float PointSpacing = 50.0f
 	);
 
-	// Generate organic shaped room with noise
+	// --- Core Organic Room Generation ---
 	UFUNCTION(BlueprintCallable, Category = "PCG|Generation")
 	TArray<FPCGPoint> GenerateOrganicRoom(
 		const FVector& CenterLocation,
 		float BaseRadius,
-		float NoiseScale,
+		float NoiseScale = -1.0f, // -1 means "use default"
 		float PointSpacing = 50.0f
 	);
 
-private:
-	// Helper functions
-	FVector2D GetRoomDimensions(ERogueVaniaRoomSize RoomSize);
-	FPCGPoint CreateRoomPoint(const FVector& Location, float Density = 1.0f);
+	/** Default noise scale for organic rooms (can be tweaked in editor) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Settings")
+	float DefaultNoiseScale = 0.05f;
 
-	// Random stream for consistent generation
+	/** Default spacing between PCG points (can be tweaked in editor) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room Settings")
+	float DefaultPointSpacing = 50.0f;
+
+private:
+	// Helpers
+	FVector GetRoomDimensions(ERogueVaniaRoomSize RoomSize);
+	FPCGPoint CreateRoomPoint(const FVector& Location, float PointSpacing, float Density = 1.0f);
+
 	FRandomStream RandomStream;
 };
+

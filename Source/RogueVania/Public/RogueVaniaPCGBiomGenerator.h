@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,20 +7,6 @@
 #include "RogueVaniaPCGRoomGenerator.h"
 #include "RogueVaniaPCGBiomGenerator.generated.h"
 
-// Structure to define a single node in our Biom layout
-USTRUCT(BlueprintType)
-struct FRogueVaniaBiomNode
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Biom")
-	ERogueVaniaRoomSize RoomSize = ERogueVaniaRoomSize::Small;
-
-	// Location of the room relative to the start of the biom
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Biom")
-	FVector RelativeLocation = FVector::ZeroVector;
-};
-
 UCLASS(BlueprintType, Blueprintable)
 class ROGUEVANIA_API URogueVaniaPCGBiomGenerator : public UObject
 {
@@ -30,25 +15,31 @@ class ROGUEVANIA_API URogueVaniaPCGBiomGenerator : public UObject
 public:
 	URogueVaniaPCGBiomGenerator();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Biom")
-	TArray<FRogueVaniaBiomNode> BiomNodes;
-
+	/** Generator instances */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Generators")
 	class URogueVaniaPCGTunnelGenerator* TunnelGenerator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Generators")
 	class URogueVaniaPCGRoomGenerator* RoomGenerator;
 
+	/** Number of rooms in this biom */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Biom")
+	int32 NumRooms = 6;
+
+	/** Main biom generation entry point */
 	UFUNCTION(BlueprintCallable, Category = "PCG")
 	void GenerateBiom(const FVector& StartLocation, TArray<FPCGPoint>& OutRoomPoints, TArray<FPCGPoint>& OutTunnelPoints);
 
 private:
-	// Helper methods for dynamic generation
-	void GenerateRandomRoomPositions(const FVector& StartLocation, TArray<FVector>& OutPositions);
-	void ConnectRoomsWithTunnels(const TArray<FVector>& RoomPositions, TArray<FPCGPoint>& OutTunnelPoints);
-	FVector GetRoomWorldLocation(const FRogueVaniaBiomNode& Node, const FVector& StartLocation);
+	// Procedural layout
+	void GenerateProceduralRoomPositions(const FVector& StartLocation, TArray<FVector>& OutPositions, TArray<ERogueVaniaRoomSize>& OutSizes);
 
-	// Utility functions
+	// Connect rooms with tunnels
+	void ConnectRoomsWithTunnels(const TArray<FVector>& RoomPositions, TArray<FPCGPoint>& OutTunnelPoints);
+
+	// Utility: size-based spacing
 	float CalculateRoomSpacing(ERogueVaniaRoomSize RoomSize);
+
+	// Safety: ensure generators are alive
 	void EnsureGeneratorsExist();
 };

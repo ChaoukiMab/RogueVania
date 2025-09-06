@@ -96,8 +96,6 @@ struct Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunne
 		float StepDistance;
 		float MaxDeviation;
 		float NoiseScale;
-		float TunnelWidth;
-		float TunnelHeight;
 		int32 RandomSeed;
 		TArray<FPCGPoint> ReturnValue;
 	};
@@ -111,9 +109,7 @@ struct Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunne
 		{ "CPP_Default_NoiseScale", "0.050000" },
 		{ "CPP_Default_RandomSeed", "-1" },
 		{ "CPP_Default_StepDistance", "100.000000" },
-		{ "CPP_Default_TunnelHeight", "200.000000" },
 		{ "CPP_Default_TunnelType", "RandomWalk" },
-		{ "CPP_Default_TunnelWidth", "200.000000" },
 		{ "ModuleRelativePath", "Public/URogueVaniaPCGTunnelGenerator.h" },
 #if !UE_BUILD_SHIPPING
 		{ "ToolTip", "Enhanced tunnel generation with more options" },
@@ -133,8 +129,6 @@ struct Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunne
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_StepDistance;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_MaxDeviation;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_NoiseScale;
-	static const UECodeGen_Private::FFloatPropertyParams NewProp_TunnelWidth;
-	static const UECodeGen_Private::FFloatPropertyParams NewProp_TunnelHeight;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_RandomSeed;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_ReturnValue_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_ReturnValue;
@@ -148,8 +142,6 @@ const UECodeGen_Private::FEnumPropertyParams Z_Construct_UFunction_URogueVaniaPC
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_StepDistance = { "StepDistance", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateAdvancedTunnelPoints_Parms, StepDistance), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_MaxDeviation = { "MaxDeviation", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateAdvancedTunnelPoints_Parms, MaxDeviation), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_NoiseScale = { "NoiseScale", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateAdvancedTunnelPoints_Parms, NoiseScale), METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_TunnelWidth = { "TunnelWidth", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateAdvancedTunnelPoints_Parms, TunnelWidth), METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_TunnelHeight = { "TunnelHeight", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateAdvancedTunnelPoints_Parms, TunnelHeight), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_RandomSeed = { "RandomSeed", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateAdvancedTunnelPoints_Parms, RandomSeed), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FStructPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_ReturnValue_Inner = { "ReturnValue", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FPCGPoint, METADATA_PARAMS(0, nullptr) }; // 866600693
 const UECodeGen_Private::FArrayPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateAdvancedTunnelPoints_Parms, ReturnValue), EArrayPropertyFlags::None, METADATA_PARAMS(0, nullptr) }; // 866600693
@@ -161,8 +153,6 @@ const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_URogue
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_StepDistance,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_MaxDeviation,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_NoiseScale,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_TunnelWidth,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_TunnelHeight,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_RandomSeed,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_ReturnValue_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints_Statics::NewProp_ReturnValue,
@@ -187,12 +177,10 @@ DEFINE_FUNCTION(URogueVaniaPCGTunnelGenerator::execGenerateAdvancedTunnelPoints)
 	P_GET_PROPERTY(FFloatProperty,Z_Param_StepDistance);
 	P_GET_PROPERTY(FFloatProperty,Z_Param_MaxDeviation);
 	P_GET_PROPERTY(FFloatProperty,Z_Param_NoiseScale);
-	P_GET_PROPERTY(FFloatProperty,Z_Param_TunnelWidth);
-	P_GET_PROPERTY(FFloatProperty,Z_Param_TunnelHeight);
 	P_GET_PROPERTY(FIntProperty,Z_Param_RandomSeed);
 	P_FINISH;
 	P_NATIVE_BEGIN;
-	*(TArray<FPCGPoint>*)Z_Param__Result=P_THIS->GenerateAdvancedTunnelPoints(Z_Param_Out_StartLocation,Z_Param_Out_EndLocation,ERogueVaniaTunnelType(Z_Param_TunnelType),Z_Param_StepDistance,Z_Param_MaxDeviation,Z_Param_NoiseScale,Z_Param_TunnelWidth,Z_Param_TunnelHeight,Z_Param_RandomSeed);
+	*(TArray<FPCGPoint>*)Z_Param__Result=P_THIS->GenerateAdvancedTunnelPoints(Z_Param_Out_StartLocation,Z_Param_Out_EndLocation,ERogueVaniaTunnelType(Z_Param_TunnelType),Z_Param_StepDistance,Z_Param_MaxDeviation,Z_Param_NoiseScale,Z_Param_RandomSeed);
 	P_NATIVE_END;
 }
 // ********** End Class URogueVaniaPCGTunnelGenerator Function GenerateAdvancedTunnelPoints ********
@@ -206,7 +194,6 @@ struct Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentT
 		float StepDistance;
 		float MaxDeviation;
 		float NoiseScale;
-		float TunnelWidth;
 		TArray<FPCGPoint> ReturnValue;
 	};
 #if WITH_METADATA
@@ -218,7 +205,6 @@ struct Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentT
 		{ "CPP_Default_MaxDeviation", "50.000000" },
 		{ "CPP_Default_NoiseScale", "0.050000" },
 		{ "CPP_Default_StepDistance", "100.000000" },
-		{ "CPP_Default_TunnelWidth", "200.000000" },
 		{ "ModuleRelativePath", "Public/URogueVaniaPCGTunnelGenerator.h" },
 #if !UE_BUILD_SHIPPING
 		{ "ToolTip", "Generate multiple tunnel segments (useful for complex paths)" },
@@ -233,7 +219,6 @@ struct Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentT
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_StepDistance;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_MaxDeviation;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_NoiseScale;
-	static const UECodeGen_Private::FFloatPropertyParams NewProp_TunnelWidth;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_ReturnValue_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_ReturnValue;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
@@ -244,7 +229,6 @@ const UECodeGen_Private::FArrayPropertyParams Z_Construct_UFunction_URogueVaniaP
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_StepDistance = { "StepDistance", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateMultiSegmentTunnel_Parms, StepDistance), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_MaxDeviation = { "MaxDeviation", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateMultiSegmentTunnel_Parms, MaxDeviation), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_NoiseScale = { "NoiseScale", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateMultiSegmentTunnel_Parms, NoiseScale), METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_TunnelWidth = { "TunnelWidth", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateMultiSegmentTunnel_Parms, TunnelWidth), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FStructPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_ReturnValue_Inner = { "ReturnValue", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FPCGPoint, METADATA_PARAMS(0, nullptr) }; // 866600693
 const UECodeGen_Private::FArrayPropertyParams Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(RogueVaniaPCGTunnelGenerator_eventGenerateMultiSegmentTunnel_Parms, ReturnValue), EArrayPropertyFlags::None, METADATA_PARAMS(0, nullptr) }; // 866600693
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::PropPointers[] = {
@@ -253,7 +237,6 @@ const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_URogue
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_StepDistance,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_MaxDeviation,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_NoiseScale,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_TunnelWidth,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_ReturnValue_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel_Statics::NewProp_ReturnValue,
 };
@@ -275,10 +258,9 @@ DEFINE_FUNCTION(URogueVaniaPCGTunnelGenerator::execGenerateMultiSegmentTunnel)
 	P_GET_PROPERTY(FFloatProperty,Z_Param_StepDistance);
 	P_GET_PROPERTY(FFloatProperty,Z_Param_MaxDeviation);
 	P_GET_PROPERTY(FFloatProperty,Z_Param_NoiseScale);
-	P_GET_PROPERTY(FFloatProperty,Z_Param_TunnelWidth);
 	P_FINISH;
 	P_NATIVE_BEGIN;
-	*(TArray<FPCGPoint>*)Z_Param__Result=P_THIS->GenerateMultiSegmentTunnel(Z_Param_Out_WayPoints,Z_Param_StepDistance,Z_Param_MaxDeviation,Z_Param_NoiseScale,Z_Param_TunnelWidth);
+	*(TArray<FPCGPoint>*)Z_Param__Result=P_THIS->GenerateMultiSegmentTunnel(Z_Param_Out_WayPoints,Z_Param_StepDistance,Z_Param_MaxDeviation,Z_Param_NoiseScale);
 	P_NATIVE_END;
 }
 // ********** End Class URogueVaniaPCGTunnelGenerator Function GenerateMultiSegmentTunnel **********
@@ -458,8 +440,8 @@ struct Z_Construct_UClass_URogueVaniaPCGTunnelGenerator_Statics
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 	static UObject* (*const DependentSingletons[])();
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
-		{ &Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints, "GenerateAdvancedTunnelPoints" }, // 3595968241
-		{ &Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel, "GenerateMultiSegmentTunnel" }, // 729877071
+		{ &Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateAdvancedTunnelPoints, "GenerateAdvancedTunnelPoints" }, // 4282613028
+		{ &Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateMultiSegmentTunnel, "GenerateMultiSegmentTunnel" }, // 4263898268
 		{ &Z_Construct_UFunction_URogueVaniaPCGTunnelGenerator_GenerateTunnelPoints, "GenerateTunnelPoints" }, // 2879886286
 	};
 	static_assert(UE_ARRAY_COUNT(FuncInfo) < 2048);
@@ -524,10 +506,10 @@ struct Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_URogueVania
 		{ ERogueVaniaTunnelType_StaticEnum, TEXT("ERogueVaniaTunnelType"), &Z_Registration_Info_UEnum_ERogueVaniaTunnelType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 431495551U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_URogueVaniaPCGTunnelGenerator, URogueVaniaPCGTunnelGenerator::StaticClass, TEXT("URogueVaniaPCGTunnelGenerator"), &Z_Registration_Info_UClass_URogueVaniaPCGTunnelGenerator, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(URogueVaniaPCGTunnelGenerator), 27481626U) },
+		{ Z_Construct_UClass_URogueVaniaPCGTunnelGenerator, URogueVaniaPCGTunnelGenerator::StaticClass, TEXT("URogueVaniaPCGTunnelGenerator"), &Z_Registration_Info_UClass_URogueVaniaPCGTunnelGenerator, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(URogueVaniaPCGTunnelGenerator), 721606586U) },
 	};
 };
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h__Script_RogueVania_2941944265(TEXT("/Script/RogueVania"),
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h__Script_RogueVania_232853065(TEXT("/Script/RogueVania"),
 	Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h__Script_RogueVania_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h__Script_RogueVania_Statics::ClassInfo),
 	nullptr, 0,
 	Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h__Script_RogueVania_Statics::EnumInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_RogueVania_Source_RogueVania_Public_URogueVaniaPCGTunnelGenerator_h__Script_RogueVania_Statics::EnumInfo));

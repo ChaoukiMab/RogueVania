@@ -2,6 +2,8 @@
 
 #include "URogueVaniaPCGTunnelGenerator.h"
 #include "Engine/Engine.h"
+#include "PCGPoint.h"
+#include "Metadata/PCGMetadata.h"
 #include "Math/UnrealMathUtility.h"
 
 URogueVaniaPCGTunnelGenerator::URogueVaniaPCGTunnelGenerator()
@@ -16,16 +18,35 @@ TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateTunnelPoints(
 	float MaxDeviation,
 	float NoiseScale)
 {
-	return GenerateAdvancedTunnelPoints(
+	TArray<FPCGPoint> Points = GenerateAdvancedTunnelPoints(
 		StartLocation,
 		EndLocation,
 		ERogueVaniaTunnelType::RandomWalk,
 		StepDistance,
 		MaxDeviation,
 		NoiseScale,
-		DefaultTunnelWidth,
-		DefaultTunnelHeight
+		-1 // default: randomized seed
 	);
+	return Points;
+}
+
+FPCGPoint URogueVaniaPCGTunnelGenerator::CreateTunnelPoint(
+	const FVector& Location,
+	float PointSpacing,
+	float /*Density*/) // we ignore the passed density now
+{
+	FPCGPoint Point;
+	Point.Transform = FTransform(FQuat::Identity, Location, FVector::OneVector);
+	Point.SetExtents(FVector(PointSpacing * 0.5f));
+
+	// Global density rule (spacing-driven)
+	float GlobalDensity = FMath::Clamp(PointSpacing / 200.0f, 0.1f, 1.0f);
+	Point.Density = GlobalDensity;
+
+	Point.Color = FVector4(0.8f, 0.6f, 0.4f, 1.0f);
+	Point.Seed = RandomStream.RandRange(0, INT_MAX);
+
+	return Point;
 }
 
 TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateRandomWalkTunnel(
@@ -33,17 +54,15 @@ TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateRandomWalkTunnel(
 	const FVector& EndLocation,
 	float StepDistance,
 	float MaxDeviation,
-	float NoiseScale,
-	float TunnelWidth,
-	float TunnelHeight)
+	float NoiseScale)
 {
 	TArray<FPCGPoint> Points;
 
 	FVector CurrentLocation = StartLocation;
 	float TotalDistance = FVector::Dist(StartLocation, EndLocation);
-	int32 MaxSteps = FMath::CeilToInt(TotalDistance / StepDistance) * 2; // Allow for wandering
+	int32 MaxSteps = FMath::Clamp(FMath::CeilToInt(TotalDistance / StepDistance) * 2, 1, 500); // prevent infinite wandering and tunnel overshooting
 
-	Points.Add(CreateTunnelPoint(CurrentLocation, TunnelWidth, TunnelHeight));
+	Points.Add(CreateTunnelPoint(CurrentLocation, StepDistance));
 
 	for (int32 Step = 0; Step < MaxSteps; Step++)
 	{
@@ -52,16 +71,19 @@ TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateRandomWalkTunnel(
 		// If we're close enough to the target, go straight there
 		if (DistanceToTarget <= StepDistance * 1.5f)
 		{
-			Points.Add(CreateTunnelPoint(EndLocation, TunnelWidth, TunnelHeight));
+			Points.Add(CreateTunnelPoint(EndLocation, StepDistance));
 			break;
 		}
 
 		// Get next step direction with noise
-		FVector NextDirection = GetNextStep(CurrentLocation, EndLocation, MaxDeviation, NoiseScale, RandomStream.FRand());
+		FVector NextDirection = GetNextStep(CurrentLocation, EndLocation, MaxDeviation, NoiseScale, StepDistance, RandomStream.FRand());
 		FVector NextLocation = CurrentLocation + NextDirection * StepDistance;
 
-		Points.Add(CreateTunnelPoint(NextLocation, TunnelWidth, TunnelHeight));
+		Points.Add(CreateTunnelPoint(NextLocation, StepDistance));
 		CurrentLocation = NextLocation;
+
+		// Safety check to avoid excessive points
+		if (Points.Num() > 100000) break;
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("Generated random walk tunnel with %d points"), Points.Num());
@@ -75,8 +97,6 @@ TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateAdvancedTunnelPoints(
 	float StepDistance,
 	float MaxDeviation,
 	float NoiseScale,
-	float TunnelWidth,
-	float TunnelHeight,
 	int32 RandomSeed)
 {
 	// Initialize random stream
@@ -88,21 +108,22 @@ TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateAdvancedTunnelPoints(
 	switch (TunnelType)
 	{
 	case ERogueVaniaTunnelType::StraightLine:
-		return GenerateStraightTunnel(StartLocation, EndLocation, StepDistance, TunnelWidth, TunnelHeight);
+		return GenerateStraightTunnel(StartLocation, EndLocation, StepDistance);
 	case ERogueVaniaTunnelType::LShape:
-		return GenerateLShapeTunnel(StartLocation, EndLocation, StepDistance, TunnelWidth, TunnelHeight);
+		return GenerateLShapeTunnel(StartLocation, EndLocation, StepDistance);
 	case ERogueVaniaTunnelType::RandomWalk:
 	default:
-		return GenerateRandomWalkTunnel(StartLocation, EndLocation, StepDistance, MaxDeviation, NoiseScale, TunnelWidth, TunnelHeight);
+		return GenerateRandomWalkTunnel(StartLocation, EndLocation, StepDistance, MaxDeviation, NoiseScale);
 	}
 }
+
+
 
 TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateMultiSegmentTunnel(
 	const TArray<FVector>& WayPoints,
 	float StepDistance,
 	float MaxDeviation,
-	float NoiseScale,
-	float TunnelWidth)
+	float NoiseScale)
 {
 	TArray<FPCGPoint> AllPoints;
 
@@ -120,9 +141,7 @@ TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateMultiSegmentTunnel(
 			ERogueVaniaTunnelType::RandomWalk,
 			StepDistance,
 			MaxDeviation,
-			NoiseScale,
-			TunnelWidth,
-			TunnelWidth
+			NoiseScale
 		);
 
 		AllPoints.Append(SegmentPoints);
@@ -132,30 +151,35 @@ TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateMultiSegmentTunnel(
 }
 
 FVector URogueVaniaPCGTunnelGenerator::GetNextStep(
-	const FVector& CurrentLocation,
-	const FVector& TargetLocation,
-	float MaxDeviation,
-	float NoiseScale,
-	float RandomSeed)
+	const FVector& CurrentLocation, const FVector& TargetLocation,
+	float MaxDeviation, float NoiseScale, float StepDistance, float RandomSeed)
 {
-	FVector Direction = (TargetLocation - CurrentLocation).GetSafeNormal();
+	FVector toTarget = TargetLocation - CurrentLocation;
+	float dist = toTarget.Size();
+	FVector dir = (dist > KINDA_SMALL_NUMBER) ? toTarget / dist : FVector::ZeroVector;
 
-	// Add noise for organic tunnel shape
-	FVector NoiseOffset = FVector(
+	FVector noise(
 		FMath::PerlinNoise3D(CurrentLocation * NoiseScale + FVector(RandomSeed, 0, 0)),
 		FMath::PerlinNoise3D(CurrentLocation * NoiseScale + FVector(0, RandomSeed, 0)),
 		FMath::PerlinNoise3D(CurrentLocation * NoiseScale + FVector(0, 0, RandomSeed))
-	) * MaxDeviation;
+	);
 
-	return Direction + NoiseOffset.GetSafeNormal() * 0.3f;
+	float noiseWeight = FMath::Clamp(StepDistance / (MaxDeviation * 2.0f), 0.1f, 1.0f);
+
+	// Fade noise as we approach target
+	float ApproachFactor = FMath::Clamp(dist / (StepDistance * 6.0f), 0.0f, 1.0f);
+
+	FVector Deviated = (dir * (1.0f - noiseWeight * ApproachFactor)) +
+		(noise * noiseWeight * ApproachFactor);
+
+	return Deviated.GetSafeNormal();
 }
 
 TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateStraightTunnel(
 	const FVector& StartLocation,
 	const FVector& EndLocation,
-	float StepDistance,
-	float TunnelWidth,
-	float TunnelHeight)
+	float StepDistance
+	)
 {
 	TArray<FPCGPoint> Points;
 
@@ -167,7 +191,8 @@ TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateStraightTunnel(
 	{
 		float Alpha = (NumSteps > 0) ? (float)i / NumSteps : 0.0f;
 		FVector StepLocation = FMath::Lerp(StartLocation, EndLocation, Alpha);
-		Points.Add(CreateTunnelPoint(StepLocation, TunnelWidth, TunnelHeight));
+		Points.Add(CreateTunnelPoint(StepLocation, StepDistance));
+		if (Points.Num() > 100000) break;
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("Generated straight tunnel with %d points"), Points.Num());
@@ -177,9 +202,7 @@ TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateStraightTunnel(
 TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateLShapeTunnel(
 	const FVector& StartLocation,
 	const FVector& EndLocation,
-	float StepDistance,
-	float TunnelWidth,
-	float TunnelHeight)
+	float StepDistance)
 {
 	TArray<FPCGPoint> Points;
 
@@ -197,27 +220,13 @@ TArray<FPCGPoint> URogueVaniaPCGTunnelGenerator::GenerateLShapeTunnel(
 	}
 
 	// Generate first segment
-	TArray<FPCGPoint> FirstSegment = GenerateStraightTunnel(StartLocation, CornerPoint, StepDistance, TunnelWidth, TunnelHeight);
+	TArray<FPCGPoint> FirstSegment = GenerateStraightTunnel(StartLocation, CornerPoint, StepDistance);
 	Points.Append(FirstSegment);
 
 	// Generate second segment
-	TArray<FPCGPoint> SecondSegment = GenerateStraightTunnel(CornerPoint, EndLocation, StepDistance, TunnelWidth, TunnelHeight);
+	TArray<FPCGPoint> SecondSegment = GenerateStraightTunnel(CornerPoint, EndLocation, StepDistance);
 	Points.Append(SecondSegment);
 
 	UE_LOG(LogTemp, Log, TEXT("Generated L-shape tunnel with %d points"), Points.Num());
 	return Points;
-}
-FPCGPoint URogueVaniaPCGTunnelGenerator::CreateTunnelPoint(
-	const FVector& Location,
-	float TunnelWidth,
-	float TunnelHeight,
-	float Density)
-{
-	FPCGPoint Point;
-	Point.Transform = FTransform(FQuat::Identity, Location, FVector(TunnelWidth / 100.0f, TunnelWidth / 100.0f, TunnelHeight / 100.0f));
-	Point.Density = Density;
-	Point.Color = FVector4(0.8f, 0.6f, 0.4f, 1.0f); // Brownish color for tunnels
-	Point.MetadataEntry = 1; // Different from room points
-
-	return Point;
 }

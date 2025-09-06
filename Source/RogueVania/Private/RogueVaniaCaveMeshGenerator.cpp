@@ -1,575 +1,475 @@
 #include "RogueVaniaCaveMeshGenerator.h"
+#include "Engine/World.h"
+#include "GameFramework/Actor.h"
 
+// Marching Cubes lookup tables
+static int EdgeTable[256] = {
+0x000,0x109,0x203,0x30a,0x406,0x50f,0x605,0x70c,0x80c,0x905,0xa0f,0xb06,0xc0a,0xd03,0xe09,0xf00,
+0x190,0x099,0x393,0x29a,0x596,0x49f,0x795,0x69c,0x99c,0x895,0xb9f,0xa96,0xd9a,0xc93,0xf99,0xe90,
+0x230,0x339,0x033,0x13a,0x636,0x73f,0x435,0x53c,0xa3c,0xb35,0x83f,0x936,0xe3a,0xf33,0xc39,0xd30,
+0x3a0,0x2a9,0x1a3,0x0aa,0x7a6,0x6af,0x5a5,0x4ac,0xbac,0xaa5,0x9af,0x8a6,0xfaa,0xea3,0xda9,0xca0,
+0x460,0x569,0x663,0x76a,0x066,0x16f,0x265,0x36c,0xc6c,0xd65,0xe6f,0xf66,0x86a,0x963,0xa69,0xb60,
+0x5f0,0x4f9,0x7f3,0x6fa,0x1f6,0x0ff,0x3f5,0x2fc,0xdfc,0xcf5,0xfff,0xef6,0x9fa,0x8f3,0xbf9,0xaf0,
+0x650,0x759,0x453,0x55a,0x256,0x35f,0x055,0x15c,0xe5c,0xf55,0xc5f,0xd56,0xa5a,0xb53,0x859,0x950,
+0x7c0,0x6c9,0x5c3,0x4ca,0x3c6,0x2cf,0x1c5,0x0cc,0xfcc,0xec5,0xdcf,0xcc6,0xbca,0xac3,0x9c9,0x8c0,
+0x8c0,0x9c9,0xac3,0xbca,0xcc6,0xdcf,0xec5,0xfcc,0x0cc,0x1c5,0x2cf,0x3c6,0x4ca,0x5c3,0x6c9,0x7c0,
+0x950,0x859,0xb53,0xa5a,0xd56,0xc5f,0xf55,0xe5c,0x15c,0x055,0x35f,0x256,0x55a,0x453,0x759,0x650,
+0xaf0,0xbf9,0x8f3,0x9fa,0xef6,0xfff,0xcf5,0xdfc,0x2fc,0x3f5,0x0ff,0x1f6,0x6fa,0x7f3,0x4f9,0x5f0,
+0xb60,0xa69,0x963,0x86a,0xf66,0xe6f,0xd65,0xc6c,0x36c,0x265,0x16f,0x066,0x76a,0x663,0x569,0x460,
+0xca0,0xda9,0xea3,0xfaa,0x8a6,0x9af,0xaa5,0xbac,0x4ac,0x5a5,0x6af,0x7a6,0x0aa,0x1a3,0x2a9,0x3a0,
+0xd30,0xc39,0xf33,0xe3a,0x936,0x83f,0xb35,0xa3c,0x53c,0x435,0x73f,0x636,0x13a,0x033,0x339,0x230,
+0xe90,0xf99,0xc93,0xd9a,0xa96,0xb9f,0x895,0x99c,0x69c,0x795,0x49f,0x596,0x29a,0x393,0x099,0x190,
+0xf00,0xe09,0xd03,0xc0a,0xb06,0xa0f,0x905,0x80c,0x70c,0x605,0x50f,0x406,0x30a,0x203,0x109,0x000
+};
 
-URogueVaniaCaveMeshGenerator::URogueVaniaCaveMeshGenerator()
-{
-	// default values 
-}
+static int TriTable[256][16] = {
+	/* 0 */   {-1},
+	/* 1 */   {0, 8, 3, -1},
+	/* 2 */   {0, 1, 9, -1},
+	/* 3 */   {1, 8, 3, 9, 8, 1, -1},
+	/* 4 */   {1, 2, 10, -1},
+	/* 5 */   {0, 8, 3, 1, 2, 10, -1},
+	/* 6 */   {9, 2, 10, 0, 2, 9, -1},
+	/* 7 */   {2, 8, 3, 2, 10, 8, 10, 9, 8, -1},
+	/* 8 */   {3, 11, 2, -1},
+	/* 9 */   {0, 11, 2, 8, 11, 0, -1},
+	/*10 */   {1, 9, 0, 2, 3, 11, -1},
+	/*11 */   {1, 11, 2, 1, 9, 11, 9, 8, 11, -1},
+	/*12 */   {3, 10, 1, 11, 10, 3, -1},
+	/*13 */   {0, 10, 1, 0, 8, 10, 8, 11, 10, -1},
+	/*14 */   {3, 9, 0, 3, 11, 9, 11, 10, 9, -1},
+	/*15 */   {9, 8, 10, 10, 8, 11, -1},
+	/*16 */   {4, 7, 8, -1},
+	/*17 */   {4, 3, 0, 7, 3, 4, -1},
+	/*18 */   {0, 1, 9, 8, 4, 7, -1},
+	/*19 */   {4, 1, 9, 4, 7, 1, 7, 3, 1, -1},
+	/*20 */   {1, 2, 10, 8, 4, 7, -1},
+	/*21 */   {3, 4, 7, 3, 0, 4, 1, 2, 10, -1},
+	/*22 */   {9, 2, 10, 9, 0, 2, 8, 4, 7, -1},
+	/*23 */   {2, 10, 9, 2, 9, 7, 2, 7, 3, 7, 9, 4, -1},
+	/*24 */   {8, 4, 7, 3, 11, 2, -1},
+	/*25 */   {11, 4, 7, 11, 2, 4, 2, 0, 4, -1},
+	/*26 */   {9, 0, 1, 8, 4, 7, 2, 3, 11, -1},
+	/*27 */   {4, 7, 11, 9, 4, 11, 9, 11, 2, 9, 2, 1, -1},
+	/*28 */   {3, 10, 1, 3, 11, 10, 7, 8, 4, -1},
+	/*29 */   {1, 11, 10, 1, 4, 11, 1, 0, 4, 7, 11, 4, -1},
+	/*30 */   {4, 7, 8, 9, 0, 11, 9, 11, 10, 11, 0, 3, -1},
+	/*31 */   {4, 7, 11, 4, 11, 9, 9, 11, 10, -1},
+	/*32 */   {9, 5, 4, -1},
+	/*33 */   {9, 5, 4, 0, 8, 3, -1},
+	/*34 */   {0, 5, 4, 1, 5, 0, -1},
+	/*35 */   {8, 5, 4, 8, 3, 5, 3, 1, 5, -1},
+	/*36 */   {1, 2, 10, 9, 5, 4, -1},
+	/*37 */   {3, 0, 8, 1, 2, 10, 4, 9, 5, -1},
+	/*38 */   {5, 2, 10, 5, 4, 2, 4, 0, 2, -1},
+	/*39 */   {2, 10, 5, 3, 2, 5, 3, 5, 4, 3, 4, 8, -1},
+	/*40 */   {9, 5, 4, 2, 3, 11, -1},
+	/*41 */   {0, 11, 2, 0, 8, 11, 4, 9, 5, -1},
+	/*42 */   {0, 5, 4, 0, 1, 5, 2, 3, 11, -1},
+	/*43 */   {2, 1, 5, 2, 5, 8, 2, 8, 11, 4, 8, 5, -1},
+	/*44 */   {10, 3, 11, 10, 1, 3, 9, 5, 4, -1},
+	/*45 */   {4, 9, 5, 0, 8, 1, 8, 10, 1, 8, 11, 10, -1},
+	/*46 */   {5, 4, 0, 5, 0, 11, 5, 11, 10, 11, 0, 3, -1},
+	/*47 */   {5, 4, 8, 5, 8, 10, 10, 8, 11, -1},
+	/*48 */   {9, 7, 8, 5, 7, 9, -1},
+	/*49 */   {9, 3, 0, 9, 5, 3, 5, 7, 3, -1},
+	/*50 */   {0, 7, 8, 0, 1, 7, 1, 5, 7, -1},
+	/*51 */   {1, 5, 3, 3, 5, 7, -1},
+	/*52 */   {9, 7, 8, 9, 5, 7, 10, 1, 2, -1},
+	/*53 */   {10, 1, 2, 9, 5, 0, 5, 3, 0, 5, 7, 3, -1},
+	/*54 */   {8, 0, 2, 8, 2, 5, 8, 5, 7, 10, 5, 2, -1},
+	/*55 */   {2, 10, 5, 2, 5, 3, 3, 5, 7, -1},
+	/*56 */   {7, 9, 5, 7, 8, 9, 3, 11, 2, -1},
+	/*57 */   {9, 5, 7, 9, 7, 2, 9, 2, 0, 2, 7, 11, -1},
+	/*58 */   {2, 3, 11, 0, 1, 8, 1, 7, 8, 1, 5, 7, -1},
+	/*59 */   {11, 2, 1, 11, 1, 7, 7, 1, 5, -1},
+	/*60 */   {9, 5, 8, 8, 5, 7, 10, 1, 3, 10, 3, 11, -1},
+	/*61 */   {5, 7, 0, 5, 0, 9, 7, 11, 0, 1, 0, 10, 11, 10, 0, -1},
+	/*62 */   {11, 10, 0, 11, 0, 3, 10, 5, 0, 8, 0, 7, 5, 7, 0, -1},
+	/*63 */   {11, 10, 5, 7, 11, 5, -1},
+	/*64 */   {10, 6, 5, -1},
+	/*65 */   {0, 8, 3, 5, 10, 6, -1},
+	/*66 */   {9, 0, 1, 5, 10, 6, -1},
+	/*67 */   {1, 8, 3, 1, 9, 8, 5, 10, 6, -1},
+	/*68 */   {1, 6, 5, 2, 6, 1, -1},
+	/*69 */   {1, 6, 5, 1, 2, 6, 3, 0, 8, -1},
+	/*70 */   {9, 6, 5, 9, 0, 6, 0, 2, 6, -1},
+	/*71 */   {5, 9, 8, 5, 8, 2, 5, 2, 6, 3, 2, 8, -1},
+	/*72 */   {2, 3, 11, 10, 6, 5, -1},
+	/*73 */   {11, 0, 8, 11, 2, 0, 10, 6, 5, -1},
+	/*74 */   {0, 1, 9, 2, 3, 11, 5, 10, 6, -1},
+	/*75 */   {5, 10, 6, 1, 9, 2, 9, 11, 2, 9, 8, 11, -1},
+	/*76 */   {6, 3, 11, 6, 5, 3, 5, 1, 3, -1},
+	/*77 */   {0, 8, 11, 0, 11, 5, 0, 5, 1, 5, 11, 6, -1},
+	/*78 */   {3, 11, 6, 0, 3, 6, 0, 6, 5, 0, 5, 9, -1},
+	/*79 */   {6, 5, 9, 6, 9, 11, 11, 9, 8, -1},
+	/*80 */   {5, 10, 6, 4, 7, 8, -1},
+	/*81 */   {4, 3, 0, 4, 7, 3, 6, 5, 10, -1},
+	/*82 */   {1, 9, 0, 5, 10, 6, 8, 4, 7, -1},
+	/*83 */   {10, 6, 5, 1, 9, 7, 1, 7, 3, 7, 9, 4, -1},
+	/*84 */   {6, 1, 2, 6, 5, 1, 4, 7, 8, -1},
+	/*85 */   {1, 2, 5, 5, 2, 6, 3, 0, 4, 3, 4, 7, -1},
+	/*86 */   {8, 4, 7, 9, 0, 5, 0, 6, 5, 0, 2, 6, -1},
+	/*87 */   {7, 3, 9, 7, 9, 4, 3, 2, 9, 5, 9, 6, 2, 6, 9, -1},
+	/*88 */   {3, 11, 2, 7, 8, 4, 10, 6, 5, -1},
+	/*89 */   {5, 10, 6, 4, 7, 2, 4, 2, 0, 2, 7, 11, -1},
+	/*90 */   {0, 1, 9, 4, 7, 8, 2, 3, 11, 5, 10, 6, -1},
+	/*91 */   {9, 2, 1, 9, 11, 2, 9, 4, 11, 7, 11, 4, 5, 10, 6, -1},
+	/*92 */   {8, 4, 7, 3, 11, 5, 3, 5, 1, 5, 11, 6, -1},
+	/*93 */   {5, 1, 11, 5, 11, 6, 1, 0, 11, 7, 11, 4, 0, 4, 11, -1},
+	/*94 */   {0, 5, 9, 0, 6, 5, 0, 3, 6, 11, 6, 3, 8, 4, 7, -1},
+	/*95 */   {6, 5, 9, 6, 9, 11, 4, 7, 9, 7, 11, 9, -1},
+	/*96 */   {10, 4, 9, 6, 4, 10, -1},
+	/*97 */   {4, 10, 6, 4, 9, 10, 0, 8, 3, -1},
+	/*98 */   {10, 0, 1, 10, 6, 0, 6, 4, 0, -1},
+	/*99 */   {8, 3, 1, 8, 1, 6, 8, 6, 4, 6, 1, 10, -1},
+	/*100*/   {1, 4, 9, 1, 2, 4, 2, 6, 4, -1},
+	/*101*/   {3, 0, 8, 1, 2, 9, 2, 4, 9, 2, 6, 4, -1},
+	/*102*/   {0, 2, 4, 4, 2, 6, -1},
+	/*103*/   {8, 3, 2, 8, 2, 4, 4, 2, 6, -1},
+	/*104*/   {10, 4, 9, 10, 6, 4, 11, 2, 3, -1},
+	/*105*/   {0, 8, 2, 2, 8, 11, 4, 9, 10, 4, 10, 6, -1},
+	/*106*/   {3, 11, 2, 0, 1, 6, 0, 6, 4, 6, 1, 10, -1},
+	/*107*/   {6, 4, 1, 6, 1, 10, 4, 8, 1, 2, 1, 11, 8, 11, 1, -1},
+	/*108*/   {9, 6, 4, 9, 3, 6, 9, 1, 3, 11, 6, 3, -1},
+	/*109*/   {8, 11, 1, 8, 1, 0, 11, 6, 1, 9, 1, 4, 6, 4, 1, -1},
+	/*110*/   {3, 11, 6, 3, 6, 0, 0, 6, 4, -1},
+	/*111*/   {6, 4, 8, 11, 6, 8, -1},
+	/*112*/   {7, 10, 6, 7, 8, 10, 8, 9, 10, -1},
+	/*113*/   {0, 7, 3, 0, 10, 7, 0, 9, 10, 6, 7, 10, -1},
+	/*114*/   {10, 6, 7, 1, 10, 7, 1, 7, 8, 1, 8, 0, -1},
+	/*115*/   {10, 6, 7, 10, 7, 1, 1, 7, 3, -1},
+	/*116*/   {1, 2, 6, 1, 6, 8, 1, 8, 9, 8, 6, 7, -1},
+	/*117*/   {2, 6, 9, 2, 9, 1, 6, 7, 9, 0, 9, 3, 7, 3, 9, -1},
+	/*118*/   {7, 8, 0, 7, 0, 6, 6, 0, 2, -1},
+	/*119*/   {7, 3, 2, 6, 7, 2, -1},
+	/*120*/   {2, 3, 11, 10, 6, 8, 10, 8, 9, 8, 6, 7, -1},
+	/*121*/   {2, 0, 7, 2, 7, 11, 0, 9, 7, 6, 7, 10, 9, 10, 7, -1},
+	/*122*/   {1, 8, 0, 1, 7, 8, 1, 10, 7, 6, 7, 10, 2, 3, 11, -1},
+	/*123*/   {11, 2, 1, 11, 1, 7, 10, 6, 1, 6, 7, 1, -1},
+	/*124*/   {8, 9, 6, 8, 6, 7, 9, 1, 6, 11, 6, 3, 1, 3, 6, -1},
+	/*125*/   {0, 9, 1, 11, 6, 7, -1},
+	/*126*/   {7, 8, 0, 7, 0, 6, 3, 11, 0, 11, 6, 0, -1},
+	/*127*/   {7, 11, 6, -1},
+	/*128*/   {7, 6, 11, -1},
+	/*129*/   {3, 0, 8, 11, 7, 6, -1},
+	/*130*/   {0, 1, 9, 11, 7, 6, -1},
+	/*131*/   {8, 1, 9, 8, 3, 1, 11, 7, 6, -1},
+	/*132*/   {10, 1, 2, 6, 11, 7, -1},
+	/*133*/   {1, 2, 10, 3, 0, 8, 6, 11, 7, -1},
+	/*134*/   {2, 9, 0, 2, 10, 9, 6, 11, 7, -1},
+	/*135*/   {6, 11, 7, 2, 10, 3, 10, 8, 3, 10, 9, 8, -1},
+	/*136*/   {7, 2, 3, 6, 2, 7, -1},
+	/*137*/   {7, 0, 8, 7, 6, 0, 6, 2, 0, -1},
+	/*138*/   {2, 7, 6, 2, 3, 7, 0, 1, 9, -1},
+	/*139*/   {1, 6, 2, 1, 7, 6, 1, 9, 7, 8, 7, 9, -1},
+	/*140*/   {10, 7, 6, 10, 1, 7, 1, 3, 7, -1},
+	/*141*/   {10, 7, 6, 1, 7, 10, 1, 0, 7, 8, 7, 0, -1},
+	/*142*/   {0, 3, 7, 0, 7, 10, 0, 10, 9, 6, 10, 7, -1},
+	/*143*/   {7, 6, 10, 7, 10, 8, 8, 10, 9, -1},
+	/*144*/   {6, 8, 4, 11, 8, 6, -1},
+	/*145*/   {3, 6, 11, 3, 0, 6, 0, 4, 6, -1},
+	/*146*/   {8, 6, 11, 8, 4, 6, 9, 0, 1, -1},
+	/*147*/   {9, 4, 6, 9, 6, 3, 9, 3, 1, 11, 3, 6, -1},
+	/*148*/   {6, 8, 4, 6, 11, 8, 2, 10, 1, -1},
+	/*149*/   {1, 2, 10, 3, 0, 11, 0, 6, 11, 0, 4, 6, -1},
+	/*150*/   {4, 11, 8, 4, 6, 11, 0, 2, 9, 2, 10, 9, -1},
+	/*151*/   {10, 9, 3, 10, 3, 2, 9, 4, 3, 11, 3, 6, 4, 6, 3, -1},
+	/*152*/   {8, 2, 3, 8, 4, 2, 4, 6, 2, -1},
+	/*153*/   {0, 4, 2, 4, 6, 2, -1},
+	/*154*/   {1, 9, 0, 2, 3, 4, 2, 4, 6, 4, 3, 8, -1},
+	/*155*/   {1, 9, 4, 1, 4, 2, 2, 4, 6, -1},
+	/*156*/   {8, 1, 3, 8, 6, 1, 8, 4, 6, 6, 10, 1, -1},
+	/*157*/   {10, 1, 0, 10, 0, 6, 6, 0, 4, -1},
+	/*158*/   {4, 6, 3, 4, 3, 8, 6, 10, 3, 0, 3, 9, 10, 9, 3, -1},
+	/*159*/   {10, 9, 4, 6, 10, 4, -1},
+	/*160*/   {4, 9, 5, 7, 6, 11, -1},
+	/*161*/   {0, 8, 3, 4, 9, 5, 11, 7, 6, -1},
+	/*162*/   {5, 0, 1, 5, 4, 0, 7, 6, 11, -1},
+	/*163*/   {11, 7, 6, 8, 3, 4, 3, 5, 4, 3, 1, 5, -1},
+	/*164*/   {9, 5, 4, 10, 1, 2, 7, 6, 11, -1},
+	/*165*/   {6, 11, 7, 1, 2, 10, 0, 8, 3, 4, 9, 5, -1},
+	/*166*/   {7, 6, 11, 5, 4, 10, 4, 2, 10, 4, 0, 2, -1},
+	/*167*/   {3, 4, 8, 3, 5, 4, 3, 2, 5, 10, 5, 2, 11, 7, 6, -1},
+	/*168*/   {7, 2, 3, 7, 6, 2, 5, 4, 9, -1},
+	/*169*/   {9, 5, 4, 0, 8, 6, 0, 6, 2, 6, 8, 7, -1},
+	/*170*/   {3, 6, 2, 3, 7, 6, 1, 5, 0, 5, 4, 0, -1},
+	/*171*/   {6, 2, 8, 6, 8, 7, 2, 1, 8, 4, 8, 5, 1, 5, 8, -1},
+	/*172*/   {9, 5, 4, 10, 1, 6, 1, 7, 6, 1, 3, 7, -1},
+	/*173*/   {1, 6, 10, 1, 7, 6, 1, 0, 7, 8, 7, 0, 9, 5, 4, -1},
+	/*174*/   {4, 0, 10, 4, 10, 5, 0, 3, 10, 6, 10, 7, 3, 7, 10, -1},
+	/*175*/   {7, 6, 10, 7, 10, 8, 5, 4, 10, 4, 8, 10, -1},
+	/*176*/   {6, 9, 5, 6, 11, 9, 11, 8, 9, -1},
+	/*177*/   {3, 6, 11, 0, 6, 3, 0, 5, 6, 0, 9, 5, -1},
+	/*178*/   {0, 11, 8, 0, 1, 11, 1, 6, 11, 1, 5, 6, -1},
+	/*179*/   {6, 11, 3, 6, 3, 5, 5, 3, 1, -1},
+	/*180*/   {1, 2, 10, 9, 5, 11, 9, 11, 8, 11, 5, 6, -1},
+	/*181*/   {0, 11, 3, 0, 6, 11, 0, 9, 6, 5, 6, 9, 1, 2, 10, -1},
+	/*182*/   {11, 8, 5, 11, 5, 6, 8, 0, 5, 10, 5, 2, 0, 2, 5, -1},
+	/*183*/   {6, 11, 3, 6, 3, 5, 2, 10, 3, 10, 5, 3, -1},
+	/*184*/   {5, 8, 9, 5, 2, 8, 5, 6, 2, 3, 8, 2, -1},
+	/*185*/   {9, 5, 6, 9, 6, 0, 0, 6, 2, -1},
+	/*186*/   {1, 5, 8, 1, 8, 0, 5, 6, 8, 3, 8, 2, 6, 2, 8, -1},
+	/*187*/   {1, 5, 6, 2, 1, 6, -1},
+	/*188*/   {1, 3, 6, 1, 6, 10, 3, 8, 6, 5, 6, 9, 8, 9, 6, -1},
+	/*189*/   {10, 1, 0, 10, 0, 6, 9, 5, 0, 5, 6, 0, -1},
+	/*190*/   {0, 3, 8, 5, 6, 10, -1},
+	/*191*/   {10, 5, 6, -1},
+	/*192*/   {11, 5, 10, 7, 5, 11, -1},
+	/*193*/   {11, 5, 10, 11, 7, 5, 8, 3, 0, -1},
+	/*194*/   {5, 11, 7, 5, 10, 11, 1, 9, 0, -1},
+	/*195*/   {10, 11, 5, 5, 11, 7, 9, 8, 1, 8, 3, 1, -1},
+	/*196*/   {11, 1, 2, 11, 7, 1, 7, 5, 1, -1},
+	/*197*/   {0, 8, 3, 1, 2, 7, 1, 7, 5, 7, 2, 11, -1},
+	/*198*/   {9, 7, 5, 9, 2, 7, 9, 0, 2, 2, 11, 7, -1},
+	/*199*/   {7, 5, 2, 7, 2, 11, 5, 9, 2, 3, 2, 8, 9, 8, 2, -1},
+	/*200*/   {2, 5, 10, 2, 3, 5, 3, 7, 5, -1},
+	/*201*/   {8, 2, 0, 8, 5, 2, 8, 7, 5, 10, 2, 5, -1},
+	/*202*/   {9, 0, 1, 5, 10, 3, 5, 3, 7, 3, 10, 2, -1},
+	/*203*/   {9, 8, 2, 9, 2, 1, 8, 7, 2, 10, 2, 5, 7, 5, 2, -1},
+	/*204*/   {1, 3, 5, 3, 7, 5, -1},
+	/*205*/   {0, 8, 7, 0, 7, 1, 1, 7, 5, -1},
+	/*206*/   {9, 0, 3, 9, 3, 5, 5, 3, 7, -1},
+	/*207*/   {9, 8, 7, 5, 9, 7, -1},
+	/*208*/   {5, 8, 4, 5, 10, 8, 10, 11, 8, -1},
+	/*209*/   {5, 0, 4, 5, 11, 0, 5, 10, 11, 11, 3, 0, -1},
+	/*210*/   {0, 1, 9, 8, 4, 10, 8, 10, 11, 10, 4, 5, -1},
+	/*211*/   {10, 11, 4, 10, 4, 5, 11, 3, 4, 9, 4, 1, 3, 1, 4, -1},
+	/*212*/   {2, 5, 1, 2, 8, 5, 2, 11, 8, 4, 5, 8, -1},
+	/*213*/   {0, 4, 11, 0, 11, 3, 4, 5, 11, 2, 11, 1, 5, 1, 11, -1},
+	/*214*/   {0, 2, 5, 0, 5, 9, 2, 11, 5, 4, 5, 8, 11, 8, 5, -1},
+	/*215*/   {9, 4, 5, 2, 11, 3, -1},
+	/*216*/   {2, 5, 10, 3, 5, 2, 3, 4, 5, 3, 8, 4, -1},
+	/*217*/   {5, 10, 2, 5, 2, 4, 4, 2, 0, -1},
+	/*218*/   {3, 10, 2, 3, 5, 10, 3, 8, 5, 4, 5, 8, 0, 1, 9, -1},
+	/*219*/   {5, 10, 2, 5, 2, 4, 1, 9, 2, 9, 4, 2, -1},
+	/*220*/   {8, 4, 5, 8, 5, 3, 3, 5, 1, -1},
+	/*221*/   {0, 4, 5, 1, 0, 5, -1},
+	/*222*/   {8, 4, 5, 8, 5, 3, 9, 0, 5, 0, 3, 5, -1},
+	/*223*/   {9, 4, 5, -1},
+	/*224*/   {4, 11, 7, 4, 9, 11, 9, 10, 11, -1},
+	/*225*/   {0, 8, 3, 4, 9, 7, 9, 11, 7, 9, 10, 11, -1},
+	/*226*/   {1, 10, 11, 1, 11, 4, 1, 4, 0, 7, 4, 11, -1},
+	/*227*/   {3, 1, 4, 3, 4, 8, 1, 10, 4, 7, 4, 11, 10, 11, 4, -1},
+	/*228*/   {4, 11, 7, 9, 11, 4, 9, 2, 11, 9, 1, 2, -1},
+	/*229*/   {9, 7, 4, 9, 11, 7, 9, 1, 11, 2, 11, 1, 0, 8, 3, -1},
+	/*230*/   {11, 7, 4, 11, 4, 2, 2, 4, 0, -1},
+	/*231*/   {11, 7, 4, 11, 4, 2, 8, 3, 4, 3, 2, 4, -1},
+	/*232*/   {2, 9, 10, 2, 7, 9, 2, 3, 7, 7, 4, 9, -1},
+	/*233*/   {9, 10, 7, 9, 7, 4, 10, 2, 7, 8, 7, 0, 2, 0, 7, -1},
+	/*234*/   {3, 7, 10, 3, 10, 2, 7, 4, 10, 1, 10, 0, 4, 0, 10, -1},
+	/*235*/   {1, 10, 2, 8, 7, 4, -1},
+	/*236*/   {4, 9, 1, 4, 1, 7, 7, 1, 3, -1},
+	/*237*/   {4, 9, 1, 4, 1, 7, 0, 8, 1, 8, 7, 1, -1},
+	/*238*/   {4, 0, 3, 7, 4, 3, -1},
+	/*239*/   {4, 8, 7, -1},
+	/*240*/   {9, 10, 8, 10, 11, 8, -1},
+	/*241*/   {3, 0, 9, 3, 9, 11, 11, 9, 10, -1},
+	/*242*/   {0, 1, 10, 0, 10, 8, 8, 10, 11, -1},
+	/*243*/   {3, 1, 10, 11, 3, 10, -1},
+	/*244*/   {1, 2, 11, 1, 11, 9, 9, 11, 8, -1},
+	/*245*/   {3, 0, 9, 3, 9, 11, 1, 2, 9, 2, 11, 9, -1},
+	/*246*/   {0, 2, 11, 8, 0, 11, -1},
+	/*247*/   {3, 2, 11, -1},
+	/*248*/   {2, 3, 8, 2, 8, 10, 10, 8, 9, -1},
+	/*249*/   {9, 10, 2, 0, 9, 2, -1},
+	/*250*/   {2, 3, 8, 2, 8, 10, 0, 1, 8, 1, 10, 8, -1},
+	/*251*/   {1, 10, 2, -1},
+	/*252*/   {1, 3, 8, 9, 1, 8, -1},
+	/*253*/   {0, 9, 1, -1},
+	/*254*/   {0, 3, 8, -1},
+	/*255*/   {-1}
+};
 
-// Helper function implementations
-FIntVector URogueVaniaCaveMeshGenerator::WorldToGrid(const FVector& WorldPos, float VoxelSize, const FVector& GridOrigin)
-{
-	FVector RelativePos = WorldPos - GridOrigin;
-	return FIntVector(
-		FMath::FloorToInt(RelativePos.X / VoxelSize),
-		FMath::FloorToInt(RelativePos.Y / VoxelSize),
-		FMath::FloorToInt(RelativePos.Z / VoxelSize)
-	);
-}
-
-FVector URogueVaniaCaveMeshGenerator::GridToWorld(const FIntVector& GridPos, float VoxelSize, const FVector& GridOrigin)
-{
-	return GridOrigin + FVector(
-		GridPos.X * VoxelSize,
-		GridPos.Y * VoxelSize,
-		GridPos.Z * VoxelSize
-	);
-}
-
-bool URogueVaniaCaveMeshGenerator::IsValidGridPosition(const FIntVector& GridPos, const FIntVector& GridDimensions)
-{
-	return GridPos.X >= 0 && GridPos.X < GridDimensions.X &&
-		GridPos.Y >= 0 && GridPos.Y < GridDimensions.Y &&
-		GridPos.Z >= 0 && GridPos.Z < GridDimensions.Z;
-}
-
-UStaticMesh* URogueVaniaCaveMeshGenerator::GenerateCaveMeshFromPoints(
+UProceduralMeshComponent* URogueVaniaCaveMeshGenerator::GenerateCaveMeshFromPoints(
+	AActor* Owner,
 	const TArray<FPCGPoint>& RoomPoints,
 	const TArray<FPCGPoint>& TunnelPoints,
 	float VoxelSize,
-	float SmoothingIterations)
+	int32 SmoothingIterations)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Generating cave mesh from %d rooms and %d tunnels"),
-		RoomPoints.Num(), TunnelPoints.Num());
-
-	// Calculate bounding box for all points
-	FVector MinBounds = FVector(FLT_MAX);
-	FVector MaxBounds = FVector(-FLT_MAX);
-
-	// Process room points
-	for (const FPCGPoint& Point : RoomPoints)
+	if (!Owner)
 	{
-		FVector Pos = Point.Transform.GetLocation();
-		FVector Extents = Point.GetExtents();
-		MinBounds = FVector::Min(MinBounds, Pos - Extents);
-		MaxBounds = FVector::Max(MaxBounds, Pos + Extents);
+		UE_LOG(LogTemp, Error, TEXT("GenerateCaveMeshFromPoints: Owner is null"));
+		return nullptr;
 	}
 
-	// Process tunnel points
-	for (const FPCGPoint& Point : TunnelPoints)
+	// 1) Compute bounds
+	FBox Bounds(ForceInit);
+	for (const FPCGPoint& P : RoomPoints) Bounds += P.Transform.GetLocation();
+	for (const FPCGPoint& P : TunnelPoints) Bounds += P.Transform.GetLocation();
+
+	FVector Extents = Bounds.GetExtent();
+	FVector Origin = Bounds.Min;
+
+	int32 SizeX = FMath::CeilToInt(Extents.X * 2 / VoxelSize) + 2;
+	int32 SizeY = FMath::CeilToInt(Extents.Y * 2 / VoxelSize) + 2;
+	int32 SizeZ = FMath::CeilToInt(Extents.Z * 2 / VoxelSize) + 2;
+
+	FVoxelGrid Grid(SizeX, SizeY, SizeZ, Origin, VoxelSize);
+
+	// 2) Rasterize points
+	RasterizePointsToGrid(RoomPoints, Grid);
+	RasterizePointsToGrid(TunnelPoints, Grid);
+
+	// 3) Smooth density
+	SmoothGrid(Grid, SmoothingIterations);
+
+	// 4) Create or find ProceduralMeshComponent
+	UProceduralMeshComponent* MeshComp = Owner->FindComponentByClass<UProceduralMeshComponent>();
+	if (!MeshComp)
 	{
-		FVector Pos = Point.Transform.GetLocation();
-		FVector Extents = Point.GetExtents();
-		MinBounds = FVector::Min(MinBounds, Pos - Extents);
-		MaxBounds = FVector::Max(MaxBounds, Pos + Extents);
+		MeshComp = NewObject<UProceduralMeshComponent>(Owner, TEXT("CaveMesh"));
+		MeshComp->RegisterComponent();
+		Owner->AddInstanceComponent(MeshComp);
+		MeshComp->AttachToComponent(Owner->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 	}
 
-	// Add padding around the cave
-	FVector Padding = FVector(VoxelSize * 5);
-	MinBounds -= Padding;
-	MaxBounds += Padding;
+	// 5) Generate mesh
+	GenerateMeshFromGrid(Grid, MeshComp);
 
-	// Calculate grid dimensions
-	FVector GridSize = MaxBounds - MinBounds;
-	FIntVector GridDimensions = FIntVector(
-		FMath::CeilToInt(GridSize.X / VoxelSize),
-		FMath::CeilToInt(GridSize.Y / VoxelSize),
-		FMath::CeilToInt(GridSize.Z / VoxelSize)
-	);
-
-	UE_LOG(LogTemp, Warning, TEXT("Grid dimensions: %d x %d x %d"),
-		GridDimensions.X, GridDimensions.Y, GridDimensions.Z);
-
-	// Initialize voxel grid (1.0 = solid, 0.0 = empty)
-	TArray<float> VoxelGrid;
-	int32 TotalVoxels = GridDimensions.X * GridDimensions.Y * GridDimensions.Z;
-	VoxelGrid.SetNum(TotalVoxels);
-
-	// Fill with solid initially
-	for (int32 i = 0; i < VoxelGrid.Num(); i++)
-	{
-		VoxelGrid[i] = 1.0f;
-	}
-
-	// Carve out rooms
-	for (const FPCGPoint& RoomPoint : RoomPoints)
-	{
-		GenerateRoomCavity(VoxelGrid, RoomPoint, VoxelSize, GridDimensions, MinBounds);
-	}
-
-	// Carve out tunnels
-	if (TunnelPoints.Num() > 0)
-	{
-		GenerateTunnelCavity(VoxelGrid, TunnelPoints, VoxelSize, GridDimensions, MinBounds);
-	}
-
-	// Smooth the cave
-	SmoothCaveMesh(VoxelGrid, GridDimensions, SmoothingIterations);
-
-	// Generate mesh from voxels
-	UStaticMesh* CaveMesh = NewObject<UStaticMesh>();
-	GenerateMeshFromVoxels(VoxelGrid, GridDimensions, CaveMesh);
-
-	UE_LOG(LogTemp, Warning, TEXT("Cave mesh generation completed"));
-	return CaveMesh;
+	return MeshComp;
 }
 
-void URogueVaniaCaveMeshGenerator::GenerateRoomCavity(
-	TArray<float>& VoxelGrid,
-	const FPCGPoint& RoomPoint,
-	float VoxelSize,
-	FIntVector GridDimensions,
-	const FVector& GridOrigin)
+void URogueVaniaCaveMeshGenerator::RasterizePointsToGrid(const TArray<FPCGPoint>& Points, FVoxelGrid& Grid)
 {
-	FVector RoomCenter = RoomPoint.Transform.GetLocation();
-	FVector RoomExtents = RoomPoint.GetExtents();
-
-	// Create organic room shape using multiple spheres
-	int32 NumSpheres = FMath::RandRange(3, 7);
-
-	for (int32 i = 0; i < NumSpheres; i++)
+	for (const FPCGPoint& P : Points)
 	{
-		// Random offset within room bounds
-		FVector SphereCenter = RoomCenter + FVector(
-			FMath::RandRange(-RoomExtents.X * 0.3f, RoomExtents.X * 0.3f),
-			FMath::RandRange(-RoomExtents.Y * 0.3f, RoomExtents.Y * 0.3f),
-			FMath::RandRange(-RoomExtents.Z * 0.3f, RoomExtents.Z * 0.3f)
-		);
+		FVector LocalPos = (P.Transform.GetLocation() - Grid.Origin) / Grid.VoxelSize;
 
-		float SphereRadius = FMath::RandRange(RoomExtents.GetMin() * 0.4f, RoomExtents.GetMin() * 0.8f);
+		int32 X = FMath::RoundToInt(LocalPos.X);
+		int32 Y = FMath::RoundToInt(LocalPos.Y);
+		int32 Z = FMath::RoundToInt(LocalPos.Z);
 
-		// Carve sphere
-		FIntVector GridCenter = WorldToGrid(SphereCenter, VoxelSize, GridOrigin);
-		int32 GridRadius = FMath::CeilToInt(SphereRadius / VoxelSize);
-
-		for (int32 x = -GridRadius; x <= GridRadius; x++)
+		if (Grid.IsInside(X, Y, Z))
 		{
-			for (int32 y = -GridRadius; y <= GridRadius; y++)
-			{
-				for (int32 z = -GridRadius; z <= GridRadius; z++)
-				{
-					FIntVector GridPos = GridCenter + FIntVector(x, y, z);
-
-					if (IsValidGridPosition(GridPos, GridDimensions))
-					{
-						float Distance = FVector(x, y, z).Size();
-						if (Distance <= GridRadius)
-						{
-							int32 Index = GridPos.X + GridPos.Y * GridDimensions.X + GridPos.Z * GridDimensions.X * GridDimensions.Y;
-
-							// Smooth falloff for organic look
-							float Alpha = FMath::Clamp(1.0f - (Distance / GridRadius), 0.0f, 1.0f);
-							VoxelGrid[Index] = FMath::Min(VoxelGrid[Index], 1.0f - Alpha);
-						}
-					}
-				}
-			}
+			Grid.DensityValues[Grid.Index(X, Y, Z)] = 1.0f; // solid
 		}
 	}
 }
 
-void URogueVaniaCaveMeshGenerator::GenerateTunnelCavity(
-	TArray<float>& VoxelGrid,
-	const TArray<FPCGPoint>& TunnelPoints,
-	float VoxelSize,
-	FIntVector GridDimensions,
-	const FVector& GridOrigin)
+void URogueVaniaCaveMeshGenerator::SmoothGrid(FVoxelGrid& Grid, int32 Iterations)
 {
-	if (TunnelPoints.Num() < 2)
-	{
-		return;
-	}
-
-	// Create tunnel by connecting points with cylindrical cavities
-	for (int32 i = 0; i < TunnelPoints.Num() - 1; i++)
-	{
-		FVector StartPos = TunnelPoints[i].Transform.GetLocation();
-		FVector EndPos = TunnelPoints[i + 1].Transform.GetLocation();
-
-		// Get tunnel width from point extents
-		float TunnelRadius = FMath::Min(TunnelPoints[i].GetExtents().X, TunnelPoints[i].GetExtents().Y) * 0.5f;
-
-		// Create tunnel segment
-		FVector Direction = (EndPos - StartPos).GetSafeNormal();
-		float SegmentLength = FVector::Dist(StartPos, EndPos);
-
-		// Sample points along the tunnel
-		int32 NumSteps = FMath::CeilToInt(SegmentLength / (VoxelSize * 0.5f));
-
-		for (int32 Step = 0; Step <= NumSteps; Step++)
-		{
-			float StepAlpha = (NumSteps > 0) ? (float)Step / NumSteps : 0.0f;
-			FVector CurrentPos = FMath::Lerp(StartPos, EndPos, StepAlpha);
-
-			// Add some organic variation to tunnel radius
-			float CurrentRadius = TunnelRadius * FMath::RandRange(0.8f, 1.2f);
-
-			// Carve cylindrical cavity
-			FIntVector GridCenter = WorldToGrid(CurrentPos, VoxelSize, GridOrigin);
-			int32 GridRadius = FMath::CeilToInt(CurrentRadius / VoxelSize);
-
-			for (int32 x = -GridRadius; x <= GridRadius; x++)
-			{
-				for (int32 y = -GridRadius; y <= GridRadius; y++)
-				{
-					for (int32 z = -GridRadius; z <= GridRadius; z++)
-					{
-						FIntVector GridPos = GridCenter + FIntVector(x, y, z);
-
-						if (IsValidGridPosition(GridPos, GridDimensions))
-						{
-							// Calculate distance from tunnel center
-							FVector WorldPos = GridToWorld(GridPos, VoxelSize, GridOrigin);
-							FVector ToPoint = WorldPos - CurrentPos;
-
-							// Project onto tunnel direction to get radial distance
-							FVector ProjectedPoint = CurrentPos + FVector::DotProduct(ToPoint, Direction) * Direction;
-							float RadialDistance = FVector::Dist(WorldPos, ProjectedPoint);
-
-							if (RadialDistance <= CurrentRadius)
-							{
-								int32 Index = GridPos.X + GridPos.Y * GridDimensions.X + GridPos.Z * GridDimensions.X * GridDimensions.Y;
-
-								// Smooth falloff for organic tunnel walls
-								float Alpha = FMath::Clamp(1.0f - (RadialDistance / CurrentRadius), 0.0f, 1.0f);
-								VoxelGrid[Index] = FMath::Min(VoxelGrid[Index], 1.0f - Alpha);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	// Also carve spherical cavities at each tunnel point for smoother connections
-	for (const FPCGPoint& TunnelPoint : TunnelPoints)
-	{
-		FVector PointPos = TunnelPoint.Transform.GetLocation();
-		float PointRadius = FMath::Min(TunnelPoint.GetExtents().X, TunnelPoint.GetExtents().Y) * 0.6f;
-
-		FIntVector GridCenter = WorldToGrid(PointPos, VoxelSize, GridOrigin);
-		int32 GridRadius = FMath::CeilToInt(PointRadius / VoxelSize);
-
-		for (int32 x = -GridRadius; x <= GridRadius; x++)
-		{
-			for (int32 y = -GridRadius; y <= GridRadius; y++)
-			{
-				for (int32 z = -GridRadius; z <= GridRadius; z++)
-				{
-					FIntVector GridPos = GridCenter + FIntVector(x, y, z);
-
-					if (IsValidGridPosition(GridPos, GridDimensions))
-					{
-						float Distance = FVector(x, y, z).Size();
-						if (Distance <= GridRadius)
-						{
-							int32 Index = GridPos.X + GridPos.Y * GridDimensions.X + GridPos.Z * GridDimensions.X * GridDimensions.Y;
-
-							float Alpha = FMath::Clamp(1.0f - (Distance / GridRadius), 0.0f, 1.0f);
-							VoxelGrid[Index] = FMath::Min(VoxelGrid[Index], 1.0f - Alpha);
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-void URogueVaniaCaveMeshGenerator::SmoothCaveMesh(TArray<float>& VoxelGrid, FIntVector GridDimensions, int32 Iterations)
-{
-	if (Iterations <= 0)
-	{
-		return;
-	}
-
-	// Create a temporary grid for smoothing calculations
-	TArray<float> TempGrid;
-	TempGrid.SetNum(VoxelGrid.Num());
-
 	for (int32 Iter = 0; Iter < Iterations; Iter++)
 	{
-		// Copy current grid to temp
-		TempGrid = VoxelGrid;
+		TArray<float> NewValues = Grid.DensityValues;
 
-		// Apply smoothing filter
-		for (int32 x = 1; x < GridDimensions.X - 1; x++)
+		for (int32 X = 1; X < Grid.SizeX - 1; X++)
 		{
-			for (int32 y = 1; y < GridDimensions.Y - 1; y++)
+			for (int32 Y = 1; Y < Grid.SizeY - 1; Y++)
 			{
-				for (int32 z = 1; z < GridDimensions.Z - 1; z++)
+				for (int32 Z = 1; Z < Grid.SizeZ - 1; Z++)
 				{
-					int32 Index = x + y * GridDimensions.X + z * GridDimensions.X * GridDimensions.Y;
-
-					// Calculate average of neighboring voxels (3x3x3 kernel)
-					float Sum = 0.0f;
+					float Sum = 0;
 					int32 Count = 0;
 
 					for (int32 dx = -1; dx <= 1; dx++)
-					{
 						for (int32 dy = -1; dy <= 1; dy++)
-						{
 							for (int32 dz = -1; dz <= 1; dz++)
 							{
-								FIntVector NeighborPos = FIntVector(x + dx, y + dy, z + dz);
-
-								if (IsValidGridPosition(NeighborPos, GridDimensions))
-								{
-									int32 NeighborIndex = NeighborPos.X + NeighborPos.Y * GridDimensions.X +
-										NeighborPos.Z * GridDimensions.X * GridDimensions.Y;
-
-									// Weight center voxel more heavily
-									float Weight = (dx == 0 && dy == 0 && dz == 0) ? 2.0f : 1.0f;
-									Sum += TempGrid[NeighborIndex] * Weight;
-									Count += Weight;
-								}
+								Sum += Grid.DensityValues[Grid.Index(X + dx, Y + dy, Z + dz)];
+								Count++;
 							}
-						}
-					}
 
-					// Apply smoothed value
-					if (Count > 0)
-					{
-						VoxelGrid[Index] = Sum / Count;
-					}
+					NewValues[Grid.Index(X, Y, Z)] = Sum / Count;
 				}
 			}
 		}
-	}
 
-	UE_LOG(LogTemp, Log, TEXT("Applied %d smoothing iterations to cave mesh"), Iterations);
+		Grid.DensityValues = MoveTemp(NewValues);
+	}
 }
 
-void URogueVaniaCaveMeshGenerator::GenerateMeshFromVoxels(const TArray<float>& VoxelGrid, FIntVector GridDimensions, UStaticMesh* OutMesh)
+void URogueVaniaCaveMeshGenerator::GenerateMeshFromGrid(const FVoxelGrid& Grid, UProceduralMeshComponent* Mesh)
 {
-	if (!OutMesh)
-	{
-		UE_LOG(LogTemp, Error, TEXT("OutMesh is null in GenerateMeshFromVoxels"));
-		return;
-	}
-
-	// Arrays to hold mesh data
 	TArray<FVector> Vertices;
 	TArray<int32> Triangles;
 	TArray<FVector> Normals;
 	TArray<FVector2D> UVs;
+	TArray<FProcMeshTangent> Tangents;
 
-	// Simple marching cubes implementation
-	// For each voxel, check if it's on the surface and generate quads
-	for (int32 x = 0; x < GridDimensions.X - 1; x++)
+	float IsoLevel = 0.5f;
+
+	for (int32 X = 0; X < Grid.SizeX - 1; X++)
 	{
-		for (int32 y = 0; y < GridDimensions.Y - 1; y++)
+		for (int32 Y = 0; Y < Grid.SizeY - 1; Y++)
 		{
-			for (int32 z = 0; z < GridDimensions.Z - 1; z++)
+			for (int32 Z = 0; Z < Grid.SizeZ - 1; Z++)
 			{
-				int32 Index = x + y * GridDimensions.X + z * GridDimensions.X * GridDimensions.Y;
-				float VoxelValue = VoxelGrid[Index];
+				int CubeIndex = 0;
+				float Val[8];
+				FVector P[8];
 
-				// If this voxel is solid, check neighbors for surface generation
-				if (VoxelValue > 0.5f)
+				// Fill cube vertices
+				for (int i = 0; i < 8; i++)
 				{
-					// Check each face direction
-					TArray<FIntVector> Directions = {
-						FIntVector(1, 0, 0),   // Right
-						FIntVector(-1, 0, 0),  // Left
-						FIntVector(0, 1, 0),   // Forward
-						FIntVector(0, -1, 0),  // Back
-						FIntVector(0, 0, 1),   // Up
-						FIntVector(0, 0, -1)   // Down
-					};
+					int ix = X + ((i & 1) ? 1 : 0);
+					int iy = Y + ((i & 2) ? 1 : 0);
+					int iz = Z + ((i & 4) ? 1 : 0);
 
-					for (int32 DirIndex = 0; DirIndex < Directions.Num(); DirIndex++)
-					{
-						FIntVector Dir = Directions[DirIndex];
-						FIntVector NeighborPos = FIntVector(x, y, z) + Dir;
+					P[i] = Grid.Origin + FVector(ix, iy, iz) * Grid.VoxelSize;
+					Val[i] = Grid.DensityValues[Grid.Index(ix, iy, iz)];
 
-						// Check if neighbor is empty (surface boundary)
-						bool bIsNeighborEmpty = false;
-						if (!IsValidGridPosition(NeighborPos, GridDimensions))
-						{
-							bIsNeighborEmpty = true; // Outside bounds = empty
-						}
-						else
-						{
-							int32 NeighborIndex = NeighborPos.X + NeighborPos.Y * GridDimensions.X +
-								NeighborPos.Z * GridDimensions.X * GridDimensions.Y;
-							bIsNeighborEmpty = VoxelGrid[NeighborIndex] <= 0.5f;
-						}
+					if (Val[i] > IsoLevel) CubeIndex |= (1 << i);
+				}
 
-						if (bIsNeighborEmpty)
-						{
-							// Generate quad face
-							GenerateQuadFace(FVector(x, y, z), Dir, DirIndex, Vertices, Triangles, Normals, UVs);
-						}
-					}
+				int EdgeMask = EdgeTable[CubeIndex];
+				if (EdgeMask == 0) continue;
+
+				FVector VertList[12];
+
+				if (EdgeMask & 1)   VertList[0] = VertexInterp(IsoLevel, P[0], P[1], Val[0], Val[1]);
+				if (EdgeMask & 2)   VertList[1] = VertexInterp(IsoLevel, P[1], P[2], Val[1], Val[2]);
+				if (EdgeMask & 4)   VertList[2] = VertexInterp(IsoLevel, P[2], P[3], Val[2], Val[3]);
+				if (EdgeMask & 8)   VertList[3] = VertexInterp(IsoLevel, P[3], P[0], Val[3], Val[0]);
+				if (EdgeMask & 16)  VertList[4] = VertexInterp(IsoLevel, P[4], P[5], Val[4], Val[5]);
+				if (EdgeMask & 32)  VertList[5] = VertexInterp(IsoLevel, P[5], P[6], Val[5], Val[6]);
+				if (EdgeMask & 64)  VertList[6] = VertexInterp(IsoLevel, P[6], P[7], Val[6], Val[7]);
+				if (EdgeMask & 128) VertList[7] = VertexInterp(IsoLevel, P[7], P[4], Val[7], Val[4]);
+				if (EdgeMask & 256) VertList[8] = VertexInterp(IsoLevel, P[0], P[4], Val[0], Val[4]);
+				if (EdgeMask & 512) VertList[9] = VertexInterp(IsoLevel, P[1], P[5], Val[1], Val[5]);
+				if (EdgeMask & 1024) VertList[10] = VertexInterp(IsoLevel, P[2], P[6], Val[2], Val[6]);
+				if (EdgeMask & 2048) VertList[11] = VertexInterp(IsoLevel, P[3], P[7], Val[3], Val[7]);
+
+				for (int i = 0; TriTable[CubeIndex][i] != -1; i += 3)
+				{
+					int idx = Vertices.Num();
+					Vertices.Add(VertList[TriTable[CubeIndex][i]]);
+					Vertices.Add(VertList[TriTable[CubeIndex][i + 1]]);
+					Vertices.Add(VertList[TriTable[CubeIndex][i + 2]]);
+
+					Triangles.Add(idx);
+					Triangles.Add(idx + 1);
+					Triangles.Add(idx + 2);
 				}
 			}
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Generated mesh with %d vertices and %d triangles"),
-		Vertices.Num(), Triangles.Num() / 3);
-
-	// Create mesh data
-	if (Vertices.Num() > 0 && Triangles.Num() > 0)
+	// Normals (simple per-triangle for now)
+	Normals.SetNum(Vertices.Num());
+	for (int i = 0; i < Triangles.Num(); i += 3)
 	{
-		// Initialize the static mesh
-		OutMesh->SetNumSourceModels(1);
-		FStaticMeshSourceModel& SourceModel = OutMesh->GetSourceModel(0);
+		FVector A = Vertices[Triangles[i]];
+		FVector B = Vertices[Triangles[i + 1]];
+		FVector C = Vertices[Triangles[i + 2]];
 
-		// Create mesh description
-		FMeshDescription* MeshDescription = OutMesh->CreateMeshDescription(0);
-		FStaticMeshAttributes Attributes(*MeshDescription);
-		Attributes.Register();
+		FVector Normal = FVector::CrossProduct(B - A, C - A).GetSafeNormal();
 
-		// Create polygon group
-		FPolygonGroupID PolygonGroupID = MeshDescription->CreatePolygonGroup();
-
-		// Populate mesh description with our data
-		PopulateMeshDescription(MeshDescription, Vertices, Triangles, Normals, UVs);
-
-		// Commit the mesh description
-		OutMesh->CommitMeshDescription(0);
-
-		// Build the static mesh
-		OutMesh->Build();
+		Normals[Triangles[i]] = Normal;
+		Normals[Triangles[i + 1]] = Normal;
+		Normals[Triangles[i + 2]] = Normal;
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No mesh data generated - empty cave"));
-	}
+
+	Mesh->CreateMeshSection_LinearColor(0, Vertices, Triangles, Normals, UVs, {}, {}, true);
 }
 
-void URogueVaniaCaveMeshGenerator::GenerateQuadFace(
-	const FVector& VoxelPos,
-	const FIntVector& Direction,
-	int32 FaceIndex,
-	TArray<FVector>& Vertices,
-	TArray<int32>& Triangles,
-	TArray<FVector>& Normals,
-	TArray<FVector2D>& UVs)
+FVector URogueVaniaCaveMeshGenerator::VertexInterp(float IsoLevel, const FVector& P1, const FVector& P2, float ValP1, float ValP2)
 {
-	// Define quad vertices based on face direction
-	TArray<FVector> QuadVertices;
-	FVector Normal = FVector(Direction);
+	if (FMath::Abs(IsoLevel - ValP1) < 0.00001) return P1;
+	if (FMath::Abs(IsoLevel - ValP2) < 0.00001) return P2;
+	if (FMath::Abs(ValP1 - ValP2) < 0.00001) return P1;
 
-	// Generate quad vertices based on direction
-	if (Direction.X != 0) // X-axis faces
-	{
-		float OffsetX = (Direction.X > 0) ? 1.0f : 0.0f;
-		QuadVertices.Add(VoxelPos + FVector(OffsetX, 0, 0));
-		QuadVertices.Add(VoxelPos + FVector(OffsetX, 1, 0));
-		QuadVertices.Add(VoxelPos + FVector(OffsetX, 1, 1));
-		QuadVertices.Add(VoxelPos + FVector(OffsetX, 0, 1));
-	}
-	else if (Direction.Y != 0) // Y-axis faces
-	{
-		float OffsetY = (Direction.Y > 0) ? 1.0f : 0.0f;
-		QuadVertices.Add(VoxelPos + FVector(0, OffsetY, 0));
-		QuadVertices.Add(VoxelPos + FVector(0, OffsetY, 1));
-		QuadVertices.Add(VoxelPos + FVector(1, OffsetY, 1));
-		QuadVertices.Add(VoxelPos + FVector(1, OffsetY, 0));
-	}
-	else // Z-axis faces
-	{
-		float OffsetZ = (Direction.Z > 0) ? 1.0f : 0.0f;
-		QuadVertices.Add(VoxelPos + FVector(0, 0, OffsetZ));
-		QuadVertices.Add(VoxelPos + FVector(1, 0, OffsetZ));
-		QuadVertices.Add(VoxelPos + FVector(1, 1, OffsetZ));
-		QuadVertices.Add(VoxelPos + FVector(0, 1, OffsetZ));
-	}
-
-	// UV coordinates based on face direction
-	TArray<FVector2D> QuadUVs;
-	QuadUVs.Add(FVector2D(0.0f, 0.0f));
-	QuadUVs.Add(FVector2D(1.0f, 0.0f));
-	QuadUVs.Add(FVector2D(1.0f, 1.0f));
-	QuadUVs.Add(FVector2D(0.0f, 1.0f));
-
-	// Add vertices to the main array
-	int32 StartIndex = Vertices.Num();
-	for (int32 i = 0; i < QuadVertices.Num(); i++)
-	{
-		Vertices.Add(QuadVertices[i] * 100.0f); // Scale to world units
-		Normals.Add(Normal);
-		UVs.Add(QuadUVs[i]); // Use UV coordinates instead of FVector2D(0.0f, 0.0f)
-	}
-
-	// Add triangles (two triangles per quad)
-	if (Direction.X > 0 || Direction.Y < 0 || Direction.Z > 0)
-	{
-		// Counter-clockwise winding
-		Triangles.Add(StartIndex + 0);
-		Triangles.Add(StartIndex + 1);
-		Triangles.Add(StartIndex + 2);
-
-		Triangles.Add(StartIndex + 0);
-		Triangles.Add(StartIndex + 2);
-		Triangles.Add(StartIndex + 3);
-	}
-	else
-	{
-		// Clockwise winding for opposite faces
-		Triangles.Add(StartIndex + 0);
-		Triangles.Add(StartIndex + 2);
-		Triangles.Add(StartIndex + 1);
-
-		Triangles.Add(StartIndex + 0);
-		Triangles.Add(StartIndex + 3);
-		Triangles.Add(StartIndex + 2);
-	}
-}
-
-void URogueVaniaCaveMeshGenerator::PopulateMeshDescription(
-	FMeshDescription* MeshDescription,
-	const TArray<FVector>& Vertices,
-	const TArray<int32>& Triangles,
-	const TArray<FVector>& Normals,
-	const TArray<FVector2D>& UVs)
-{
-	if (!MeshDescription)
-	{
-		return;
-	}
-
-	FStaticMeshAttributes Attributes(*MeshDescription);
-
-	// Get attribute accessors
-	TVertexAttributesRef<FVector3f> VertexPositions = Attributes.GetVertexPositions();
-	TVertexInstanceAttributesRef<FVector3f> VertexInstanceNormals = Attributes.GetVertexInstanceNormals();
-	TVertexInstanceAttributesRef<FVector2f> VertexInstanceUVs = Attributes.GetVertexInstanceUVs();
-
-	// Reserve space
-	MeshDescription->ReserveNewVertices(Vertices.Num());
-	MeshDescription->ReserveNewVertexInstances(Vertices.Num());
-	MeshDescription->ReserveNewPolygons(Triangles.Num() / 3);
-	MeshDescription->ReserveNewEdges(Triangles.Num());
-
-	// Add vertices
-	TArray<FVertexID> VertexIDs;
-	for (int32 i = 0; i < Vertices.Num(); i++)
-	{
-		FVertexID VertexID = MeshDescription->CreateVertex();
-		VertexPositions[VertexID] = FVector3f(Vertices[i]);
-		VertexIDs.Add(VertexID);
-	}
-
-	// Add triangles
-	for (int32 i = 0; i < Triangles.Num(); i += 3)
-	{
-		TArray<FVertexInstanceID> VertexInstanceIDs;
-
-		for (int32 j = 0; j < 3; j++)
-		{
-			int32 VertexIndex = Triangles[i + j];
-			FVertexInstanceID VertexInstanceID = MeshDescription->CreateVertexInstance(VertexIDs[VertexIndex]);
-
-			VertexInstanceNormals[VertexInstanceID] = FVector3f(Normals[VertexIndex]);
-			VertexInstanceUVs[VertexInstanceID] = FVector2f(UVs[VertexIndex]);
-
-			VertexInstanceIDs.Add(VertexInstanceID);
-		}
-
-		// Create polygon
-		MeshDescription->CreatePolygon(FPolygonGroupID(0), VertexInstanceIDs);
-	}
+	float Mu = (IsoLevel - ValP1) / (ValP2 - ValP1);
+	return P1 + Mu * (P2 - P1);
 }

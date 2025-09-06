@@ -1,8 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "RogueVaniaPCGRoomGenerator.h"
 #include "Engine/Engine.h"
+#include "Metadata/PCGMetadata.h"
 #include "Math/UnrealMathUtility.h"
 
 URogueVaniaPCGRoomGenerator::URogueVaniaPCGRoomGenerator()
@@ -15,12 +13,42 @@ TArray<FPCGPoint> URogueVaniaPCGRoomGenerator::GenerateRoomPoints(
 	const FVector& CenterLocation,
 	float NoiseScale)
 {
-	FVector2D Dimensions = GetRoomDimensions(RoomSize);
+	TArray<FPCGPoint> Points;
 
-	// Generate organic room with noise for more natural cave-like appearance
-	return GenerateOrganicRoom(CenterLocation, Dimensions.X * 0.5f, NoiseScale, 50.0f);
+	// Get room dimensions based on size
+	FVector Dimensions = GetRoomDimensions(RoomSize);
+
+	// Apply default if NoiseScale not set
+	float FinalNoiseScale = (NoiseScale < 0.0f) ? DefaultNoiseScale : NoiseScale;
+
+	// Currently we use X as base radius (spherical rooms).
+	// Future rectangular/cylindrical rooms will use full XYZ.
+	// For now, ALL rooms are organic (default path)
+	Points = GenerateOrganicRoom(CenterLocation, Dimensions.X * 0.5f, FinalNoiseScale);
+
+	return Points;
 }
 
+FPCGPoint URogueVaniaPCGRoomGenerator::CreateRoomPoint(
+	const FVector& Location,
+	float PointSpacing,
+	float DensityFactor)
+{
+	FPCGPoint Point;
+	Point.Transform = FTransform(FQuat::Identity, Location, FVector::OneVector);
+
+	// Density rule (scaled by spacing & factor)
+	float RoomVolumeFactor = FMath::Clamp(PointSpacing / 200.0f, 0.1f, 1.0f);
+	Point.Density = FMath::Clamp(RoomVolumeFactor * DensityFactor, 0.1f, 1.0f);
+
+	Point.Color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+	Point.Seed = RandomStream.RandRange(0, INT_MAX);
+	Point.SetExtents(FVector(PointSpacing * 0.5f));
+
+	return Point;
+}
+
+// --- Legacy Generators (kept but unused for now) ---
 TArray<FPCGPoint> URogueVaniaPCGRoomGenerator::GenerateRectangularRoom(
 	const FVector& CenterLocation,
 	float Width,
@@ -48,7 +76,7 @@ TArray<FPCGPoint> URogueVaniaPCGRoomGenerator::GenerateRectangularRoom(
 					z * PointSpacing
 				);
 
-				Points.Add(CreateRoomPoint(PointLocation));
+				Points.Add(CreateRoomPoint(PointLocation, PointSpacing, 1.0f));
 			}
 		}
 	}
@@ -79,11 +107,11 @@ TArray<FPCGPoint> URogueVaniaPCGRoomGenerator::GenerateCircularRoom(
 					(z - HalfSteps) * PointSpacing
 				);
 
-				// Check if point is within sphere
+				// Sphere check
 				if (LocalPos.Size() <= Radius)
 				{
 					FVector WorldPos = CenterLocation + LocalPos;
-					Points.Add(CreateRoomPoint(WorldPos));
+					Points.Add(CreateRoomPoint(WorldPos, PointSpacing, 1.0f));
 				}
 			}
 		}
@@ -93,6 +121,7 @@ TArray<FPCGPoint> URogueVaniaPCGRoomGenerator::GenerateCircularRoom(
 	return Points;
 }
 
+// --- Organic Generator (default path) ---
 TArray<FPCGPoint> URogueVaniaPCGRoomGenerator::GenerateOrganicRoom(
 	const FVector& CenterLocation,
 	float BaseRadius,
@@ -101,36 +130,38 @@ TArray<FPCGPoint> URogueVaniaPCGRoomGenerator::GenerateOrganicRoom(
 {
 	TArray<FPCGPoint> Points;
 
+	// Apply defaults if not provided
+	float FinalNoiseScale = (NoiseScale < 0.0f) ? DefaultNoiseScale : NoiseScale;
+	float FinalPointSpacing = (PointSpacing < 0.0f) ? DefaultPointSpacing : PointSpacing;
+
 	int32 Steps = FMath::CeilToInt((BaseRadius * 2.0f) / PointSpacing);
-	float HalfSteps = Steps * 0.5f;
+	float r = BaseRadius + BaseRadius * 0.3f;
+	float r2 = r * r;
 
-	for (int32 x = 0; x <= Steps; x++)
+	for (int32 x = -Steps; x <= Steps; ++x)
 	{
-		for (int32 y = 0; y <= Steps; y++)
+		for (int32 y = -Steps; y <= Steps; ++y)
 		{
-			for (int32 z = 0; z <= Steps; z++)
+			for (int32 z = -Steps; z <= Steps; ++z)
 			{
-				FVector LocalPos = FVector(
-					(x - HalfSteps) * PointSpacing,
-					(y - HalfSteps) * PointSpacing,
-					(z - HalfSteps) * PointSpacing
-				);
+				FVector LocalPos = FVector(x, y, z) * PointSpacing;
+				if (LocalPos.SizeSquared() > r2) continue;
 
-				// Calculate distance from center
 				float Distance = LocalPos.Size();
-
-				// Add noise to create organic shape
-				float NoiseValue = FMath::PerlinNoise3D(LocalPos * NoiseScale);
+				float NoiseValue = FMath::PerlinNoise3D(LocalPos * FinalNoiseScale);
 				float ModifiedRadius = BaseRadius + (NoiseValue * BaseRadius * 0.3f);
 
-				// Check if point is within the organic shape
 				if (Distance <= ModifiedRadius)
 				{
 					FVector WorldPos = CenterLocation + LocalPos;
+					float GradientDensity = FMath::Clamp(1.0f - (Distance / ModifiedRadius), 0.1f, 1.0f);
+					Points.Add(CreateRoomPoint(WorldPos, PointSpacing, GradientDensity));
+				}
 
-					// Create point with density based on distance from center
-					float Density = FMath::Clamp(1.0f - (Distance / ModifiedRadius), 0.1f, 1.0f);
-					Points.Add(CreateRoomPoint(WorldPos, Density));
+				if (Points.Num() > 100000)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Safety guard triggered in OrganicRoom"));
+					return Points;
 				}
 			}
 		}
@@ -140,30 +171,18 @@ TArray<FPCGPoint> URogueVaniaPCGRoomGenerator::GenerateOrganicRoom(
 	return Points;
 }
 
-FVector2D URogueVaniaPCGRoomGenerator::GetRoomDimensions(ERogueVaniaRoomSize RoomSize)
+// --- Size Definitions ---
+FVector URogueVaniaPCGRoomGenerator::GetRoomDimensions(ERogueVaniaRoomSize RoomSize)
 {
 	switch (RoomSize)
 	{
 	case ERogueVaniaRoomSize::Small:
-		return FVector2D(400.0f, 400.0f);
+		return FVector(400.0f, 400.0f, 400.0f);
 	case ERogueVaniaRoomSize::Medium:
-		return FVector2D(800.0f, 800.0f);
+		return FVector(800.0f, 800.0f, 800.0f);
 	case ERogueVaniaRoomSize::Large:
-		return FVector2D(1200.0f, 1200.0f);
+		return FVector(1200.0f, 1200.0f, 1200.0f);
 	default:
-		return FVector2D(800.0f, 800.0f);
+		return FVector(800.0f, 800.0f, 800.0f);
 	}
-}
-
-FPCGPoint URogueVaniaPCGRoomGenerator::CreateRoomPoint(const FVector& Location, float Density)
-{
-	FPCGPoint Point;
-	Point.Transform = FTransform(FQuat::Identity, Location, FVector::OneVector);
-	Point.Density = Density;
-	Point.Color = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-
-	// Set metadata for room points
-	Point.MetadataEntry = 0; // Could be used to identify point type
-
-	return Point;
 }

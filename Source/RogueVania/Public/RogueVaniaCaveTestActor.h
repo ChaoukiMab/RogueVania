@@ -36,9 +36,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cave Generation")
 	bool bShowDebugInfo = true;
 
-	// Biome Configuration
+	// Procedural Biome Settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Biome Settings")
-	TArray<FRogueVaniaBiomNode> BiomNodes;
+	int32 NumRooms = 6;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Biome Settings")
 	FVector StartLocation = FVector::ZeroVector;
@@ -68,9 +68,6 @@ private:
 	TArray<FPCGPoint> CachedTunnelPoints;
 
 	// Helper functions
-	void InitializeGenerators();
 	void UpdateCaveMesh();
-
-	// Debug visualization
 	void DrawDebugPoints(const TArray<FPCGPoint>& RoomPoints, const TArray<FPCGPoint>& TunnelPoints);
 };

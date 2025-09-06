@@ -45,8 +45,6 @@ public:
 		float StepDistance = 100.0f,
 		float MaxDeviation = 50.0f,
 		float NoiseScale = 0.05f,
-		float TunnelWidth = 200.0f,
-		float TunnelHeight = 200.0f,
 		int32 RandomSeed = -1
 	);
 
@@ -56,8 +54,7 @@ public:
 		const TArray<FVector>& WayPoints,
 		float StepDistance = 100.0f,
 		float MaxDeviation = 50.0f,
-		float NoiseScale = 0.05f,
-		float TunnelWidth = 200.0f
+		float NoiseScale = 0.05f
 	);
 
 	// Configurable properties
@@ -79,6 +76,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tunnel Settings")
 	ERogueVaniaTunnelType DefaultTunnelType = ERogueVaniaTunnelType::RandomWalk;
 
+
 private:
 	// Internal helper function for random walk with noise
 	FVector GetNextStep(
@@ -86,6 +84,7 @@ private:
 		const FVector& TargetLocation,
 		float MaxDeviation,
 		float NoiseScale,
+		float StepDistance,
 		float RandomSeed
 	);
 
@@ -93,25 +92,20 @@ private:
 	TArray<FPCGPoint> GenerateStraightTunnel(
 		const FVector& StartLocation,
 		const FVector& EndLocation,
-		float StepDistance,
-		float TunnelWidth,
-		float TunnelHeight
+		float StepDistance
 	);
 
 	// Generate L-shaped tunnel
 	TArray<FPCGPoint> GenerateLShapeTunnel(
 		const FVector& StartLocation,
 		const FVector& EndLocation,
-		float StepDistance,
-		float TunnelWidth,
-		float TunnelHeight
+		float StepDistance
 	);
 
 	// Helper to create a PCG point with proper settings
 	FPCGPoint CreateTunnelPoint(
 		const FVector& Location,
-		float TunnelWidth = 200.0f,
-		float TunnelHeight = 200.0f,
+		float PointSpacing,
 		float Density = 1.0f
 	);
 
@@ -121,9 +115,7 @@ private:
 		const FVector& EndLocation,
 		float StepDistance,
 		float MaxDeviation,
-		float NoiseScale,
-		float TunnelWidth,
-		float TunnelHeight
+		float NoiseScale
 	);
 
 	// Random stream for consistent randomization

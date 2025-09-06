@@ -8,7 +8,7 @@ public class RogueVania : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "PCG", "MeshDescription", "StaticMeshDescription", "MeshUtilities", "MeshBuilder" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "PCG", "MeshDescription", "StaticMeshDescription", "MeshUtilities", "MeshBuilder", "ProceduralMeshComponent" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "PCG" });
 
